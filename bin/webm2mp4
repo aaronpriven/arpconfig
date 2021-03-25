@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+
+use 5.012;
+
+my $infile = shift @ARGV;
+
+my $outfile = $infile;
+$outfile =~ s/webm\z/mp4/;
+
+system "ffmpeg -i $infile -c:v libx264 -c:a aac -strict experimental -b:a 192k $outfile"
+#say "ffmpeg -i $infile -c:v libx264 -c:a aac -strict experimental -b:a 192k $outfile"

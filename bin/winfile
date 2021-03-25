@@ -1,0 +1,34 @@
+#!/usr/bin/env perl
+
+use 5.016;
+use warnings;
+
+my $username = lcfirst($ENV{USER});
+
+my %volume_of = ( 
+   K => 'MARKETING$',
+   S => 'SHARE$',
+   U => "$username\$",
+);
+
+my @args = @ARGV;
+foreach (@args) {
+
+   my $volume = '';
+   if ( /\A[A-Za-z]:/ ) {
+      ($volume, $_) = split(/:/ , $_, 2);
+      $volume = '/Volumes/' . $volume_of{$volume};
+   }
+
+   s#\\#/#g;
+
+   $_ = $volume . $_;
+   
+}
+
+my $args = join('\\ ' , @args);
+
+say $args;
+
+
+

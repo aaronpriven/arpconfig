@@ -1,0 +1,15 @@
+#!/usr/bin/perl 
+
+use open qw/ :std :encoding(UTF-8) /;
+
+use HTML::Entities ;
+
+while (<>) {
+
+        encode_entities($_, '^\x00-\x7E');
+
+        print;
+    
+} 
+
+

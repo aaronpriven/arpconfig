@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+
+use 5.024;
+use strict;
+
+use Cwd ('abs_path');
+foreach my $file (@ARGV) {
+   my $path = abs_path($file);
+   $path =~ s#/Users/[a-z]+/##;
+   say $path;
+}

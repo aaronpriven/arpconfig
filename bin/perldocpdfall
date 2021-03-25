@@ -1,0 +1,17 @@
+#!/ActivePerl/bin/perl
+
+
+use v5.010;
+
+while ($file = <>) {
+
+   chomp $file;
+    
+   $_ = $file;
+   s{/}{_}g;
+   s/^\.\_//;
+   $_ = "$ENV{HOME}/Desktop/pods/$_.pdf";
+   say $file;
+   system "perldocpdf $file >$_";
+
+}

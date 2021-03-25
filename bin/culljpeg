@@ -1,0 +1,121 @@
+#!/usr/bin/perl
+
+use File::Find;
+use String::CRC32;
+use File::Compare;
+use Image::Info qw(image_info dim);
+
+our $count = 0;
+$arg = lc shift @ARGV;
+
+if ($arg eq "kill") {
+   $doit = "k";
+} elsif ($arg eq "zap") {
+   $doit = "z";
+} elsif ($arg eq "move") {
+   $doit = "m";
+   $movedir = $ARGV[0] || "/tmp/move-to";
+}
+
+mkdir $movedir;
+
+%crchash = ();
+@files = ();
+
+find ( { wanted => \&wanted, no_chdir => 1 } , '.');
+
+sub wanted {
+
+   push @files, $_ if /\.(?i:jpg|jpeg|gif|bmp|png|tiff|tif)$/;
+}
+
+foreach $file (reverse sort @files) {
+   next unless -f $file;
+   #print $file , "             \r";
+   docomparison ($file) if size ($file);
+   # do the comparison if the size check is true
+}
+
+print $count , "\n";
+
+sub size {
+
+    my ($file) = shift;
+    my ($info) = image_info($file);
+
+    if ($info->{error}) {
+
+       unless ($doit eq "z") {
+          print "$file: can't read info\n";
+          return 1;
+       }
+       cull ("$file: can't read info\n");
+       return 0;
+    }
+
+    my ($width, $height) = dim($info);
+    my ($pixels) = $width * $height;
+
+    return 1 
+     if (($width > 100 and $height > 100 and
+          $pixels > 60000) or ( $pixels == 0 and $doit ne "z"));
+
+# $pixels == 0 means the file's not complete... don't know why this
+# doesn't give an error from Image::Info, but it doesn't.
+
+    cull ("$file: ${width}x$height (total $pixels pixels)");
+
+    return 0;
+
+}
+
+sub docomparison {
+   my ($file) = shift;
+   open (FH, $file);
+   $crc = crc32(*FH);
+   close (FH);
+   unless ($crchash{$crc}) {
+      $crchash{$crc} = [ $file ];
+      return 0;
+   }
+   # so we know there's an entry for this CRC
+   foreach $possibledupe ( @{$crchash{$crc}}) {
+      if  (compare($file, $possibledupe == 0) ) { # if they're the same,
+
+         cull ("$file duplicate of\n\t$possibledupe\n");
+
+         my $now = time;
+         utime $now , $now, $possibledupe;
+         return 1;
+      }
+   }
+   push @{$crchash{$crc}}, $file;
+   return 0;
+}
+
+sub cull {
+
+    print "\n";
+    print "Unlinking " if $doit eq "k" or $doit eq "z";
+    print "Moving " if $doit eq "m";
+    print (+shift , "\n");
+
+    if ($doit eq "m") {
+       my $basefile = $file;
+       $basefile =~ s%.*/%%;
+
+       my $newfile = $basefile;
+
+       my $copycount = "0";
+       while (-e "$movedir/$newfile") {
+           $newfile = $copycount++ . "-$basefile";
+       }
+       rename $file , "$movedir/$newfile" or die "can't move file: $!";
+
+    } elsif ($doit eq "k") {
+       unlink $file if $doit eq "k";
+    }
+    our $count;
+    $count++;
+}
+

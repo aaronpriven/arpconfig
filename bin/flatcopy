@@ -1,0 +1,58 @@
+#!/Activeperl/bin/perl
+
+use 5.012;
+use warnings;
+
+use File::Copy('cp');
+use File::Find ();
+use File::Basename;
+use Cwd;
+
+my $regexp = fileglob_to_re(shift @ARGV);
+
+sub fileglob_to_re { # stolen from find2perl
+    my $x = shift;
+    $x =~ s#([./^\$()+])#\\$1#g;
+    $x =~ s#([?*])#.$1#g;
+    "^$x\\z";
+}
+
+my $dest = shift @ARGV;
+$dest = getcwd . '/' . $dest unless $dest =~ m#^/#;
+
+# cargo cult programming at its finest includes the following lines:
+
+# for the convenience of &wanted calls, including -eval statements:
+use vars qw/*name *dir *prune/;
+*name   = *File::Find::name;
+*dir    = *File::Find::dir;
+*prune  = *File::Find::prune;
+
+File::Find::find({wanted => \&wanted, }, '.');
+
+sub wanted {
+    return if -d $name;
+    return unless /$regexp/i;
+
+    my $destfile = "$dest/$_";
+
+    if (-e $destfile) {
+       # mess with destfile
+
+       my ($mainname, $destdir, $ext) = fileparse($_, qr/\.[^.]*/);
+       
+       my $count = 1;
+       while (-e $destfile) {
+           $destfile = "$dest/$mainname" . '-' . $count++;
+           $destfile .= $ext if defined $ext and $ext ne '';
+
+       }
+
+    }
+
+   say "$name ==> $destfile";
+   cp ( $_ , $destfile) or die $!;
+
+}
+
+

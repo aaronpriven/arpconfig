@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+use 5.024;
+use strict;
+
+use Cwd ('abs_path');
+my @output;
+foreach my $file (@ARGV) {
+   my $path = abs_path($file);
+   $path =~ s#/Users/[a-z]+/##;
+   say $path;
+   push @output, q{"} . $path . q{"};
+}
+
+open my $out, '|-', '/usr/bin/pbcopy' or die $!;
+
+say $out join ("\n" , @output);
+
+close $out;

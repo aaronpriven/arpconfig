@@ -1,0 +1,67 @@
+#!/usr/bin/perl
+
+srand;
+
+$basedir = $ARGV[0];
+
+die "No directory on command line" unless $basedir;
+
+foreach $file (<*>) {
+
+#   next unless $file =~ /\.(jpg|jpeg|gif|png|jpe|bmp)$/i;
+
+   ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+       $atime,$mtime,$ctime,$blksize,$blocks)
+           = stat($file);
+
+   ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
+           localtime($mtime); 
+
+   $year += 1900;
+
+   $mon = (qw (Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec) )[$mon];
+
+   $dir = "$basedir/$year-$mon";
+
+
+   unless ( -d $dir ) {
+      mkdir "$dir" or die "Error $!";
+   }
+
+   $newfile = "$dir/$file";
+
+   while ( -e $newfile) {
+
+      print "Already exists: $newfile\n -- using";
+
+       $newfile = reverse $file;
+       $randletters = &randletters(8);
+       $newfile =~ s/\./.$randletters-/;
+       $newfile = "$dir/" . reverse $newfile;
+
+       # the reverses are in there so it puts the random letters
+       # in place of the last dot, not the first one
+
+#      $newfile = "$dir/_" . &randletters(8) . "-$file";
+
+      print " $newfile\n";
+   }
+
+   rename $file , $newfile;
+
+}
+
+sub randletters {
+
+$num = shift;
+
+$str = "";
+
+  foreach (1 .. $num) {
+
+   $str .= substr('0123456789abcdefghijklmopqrstuvwxyz_' , rand(37) , 1);
+
+  }
+
+return $str;
+}

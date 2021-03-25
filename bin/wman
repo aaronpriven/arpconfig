@@ -1,0 +1,24 @@
+#!/usr/bin/perl
+# wman , a program placed in the public domain by Aaron Priven
+
+use File::Basename;
+
+$manpage = `/usr/bin/man -w $ARGV[0] $ARGV[1]`; 
+# outputs errors to STDERR. 
+chomp $manpage;
+exit 1 unless $manpage;
+
+$cachefil = "$ENV{HOME}/Library/Caches/wman$manpage.html";
+# $manpage always begins with a /
+
+unless ( (-e $cachefil ) and (stat($cachefil))[9] >= (stat($manpage))[9]) {
+# unless the cache file exists, and is older or the same age as the manpage
+
+   print "Making $cachefil...\n";
+
+   system "/bin/mkdir -p " . dirname($cachefil);
+   system "/usr/bin/groff -mandoc -T html $manpage > $cachefil";
+   system "/usr/bin/touch -r $manpage $cachefil";
+}
+
+exec "/usr/bin/open $cachefil" or die "can't open $cachefil";

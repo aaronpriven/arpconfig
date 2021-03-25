@@ -1,0 +1,160 @@
+#!/usr/bin/perl
+
+use strict;
+use File::Find ();
+
+use File::Basename(qw(fileparse));
+use File::stat;
+
+# for the convenience of &wanted calls, including -eval statements:
+use vars qw/*name *dir *prune/;
+*name   = *File::Find::name;
+*dir    = *File::Find::dir;
+*prune  = *File::Find::prune;
+
+our ($new_name, $path, $new_ext);
+
+my %is_a_valid_token;
+$is_a_valid_token{$_} = 1 
+   foreach ( qw(n s e w ne se sw nw cc cw nomarkers east west inset blue white
+	     1color 4color 2color calworks weekday weekend day night
+	     2panel 3panel 4panel 5panel 6panel 7panel halfpanel
+	     ) );
+
+my $pwd = '.';
+$pwd = '/b/Maps/Line Maps/M' if $ENV{'RUNNING_UNDER_AFFRUS'};
+
+File::Find::find({wanted => \&wanted}, $pwd);
+
+sub wanted {
+
+    return if  /\.DS_Store$/;
+    return if  /_validlines$/;
+
+    # return if it's a directory
+    ($new_name, $path, $new_ext) = fileparse($_ , (qr{\.[^.]+}) );
+    my $sb = lstat($_);
+    unless (-f _) {
+        # print "\nDIRECTORY: $_\n\n";
+        return;
+    }
+
+    return if bad_pattern();
+
+    return if bad_token();
+   
+    return if bad_lines();
+
+    good();
+
+}
+
+
+sub bad_pattern {
+
+   return 0 if $new_name =~
+         /^(?:[0-9A-Z]{1,3}_)* # some number of 0-3 character items
+         [0-9A-Z]{1,3}         # last 0-3 character item
+	 (?:=[\dA-Za-z]*)*      # some number of tokens
+	 -                     # hyphen
+         20[01]\d_(?:0\d|1[012])  # 2000-2019 date
+         -[^-]*                # any characters (usu. a version # and extensions)
+	 $/x;
+
+   bad (' ');
+
+   return 1; # bad
+
+}
+
+sub good {
+
+   # do nothing 
+
+}
+
+sub bad {
+     my $char = $_[0] or ' ';
+     print  "$char $name\n";
+}
+
+sub bad_token {
+
+   return 0 unless /\=/;
+
+   /\=([A-Za-z0-9]*)-/;
+   my $token = $1;
+
+   return 0 if $is_a_valid_token{lc($token)};
+
+   bad ('*' , $_);
+
+   return 1;
+
+}
+
+sub bad_lines {
+
+   my $lines = $_;
+   $lines =~ s/[-=].*//;
+   $lines =~ s/_/ /g;
+
+   my $dirlines = $dir;
+   $dirlines =~ s#/$##;
+   $dirlines =~ s#.*/##; # greedy - matches up to the last /
+
+   return 0 if $lines eq $dirlines;
+   
+   bad ('!' , $_);
+
+
+}
+
+__END__
+
+sub wanted {
+
+    my ($new_name, $path, $new_ext) = fileparse($_ , (qr{\.[^.]+}) );
+    
+    return if /^\.DS_Store$/;
+    my $sb = lstat($_);
+    unless (-f _) {
+        # print "\nDIRECTORY: $_\n\n";
+        return;
+    }
+
+    return if # no token
+      $new_name =~ 
+         /^(?:[0-9A-Z]{1,3}_)* # some number of 0-3 character items
+         [0-9A-Z]{1,3}         # last 0-3 character item
+	 -                     # hyphen
+         200\d_(?:0\d|1[012])  # 2000 date
+         -[^-.]*               # any token (usu. a version #)
+	 $/x;
+	 
+    # so either has a token, or is bad
+
+    
+    my $result =   $new_name =~ 
+         /^(?:[0-9A-Z]{1,3}_)* # some number of 0-3 character items
+         [0-9A-Z]{1,3}         # last 0-3 character item
+	 (?:=[\dA-Za-z]*)*      # some number of tokens
+	 -                     # hyphen
+         200\d_(?:0\d|1[012])  # 2000 date
+         -[^-.]*               # any token (usu. a version #)
+	 $/x;
+
+    /\=([A-Za-z0-9]*)-/;
+    my $token = $1;
+    my $isa = $is_a_valid_token{lc($token)};
+#    print "[$result:$token:$isa]";
+
+    return if $result and $isa;
+
+#      $new_name =~ 
+#         /^(?:[:alnum:]_){0,2}[:alnum:]-(?:199|200)\d_(?:0\d|1[012])-(?:v|wv|[Ss]chem)\d+[abc]$/x;
+
+     print + ($result ? "*" : " ") , " $_\n";
+
+}
+

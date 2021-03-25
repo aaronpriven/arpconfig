@@ -1,0 +1,66 @@
+#!/usr/bin/env perl
+
+use File::Find;
+use String::CRC32;
+use File::Compare;
+
+our $count = 0;
+
+$arg = shift @ARGV;
+
+$arg = lc ($arg);
+
+$testmode = 1 unless $arg eq "killem" ;
+
+%crchash = ();
+
+@files = ();
+
+find ( { wanted => \&wanted, no_chdir => 1 } , '.');
+
+sub wanted {
+
+   push @files, $_;
+
+}
+
+foreach $file (reverse sort @files) {
+
+   docomparison ($file);
+
+}
+
+print $count , "\n";
+
+sub docomparison {
+
+   $_ = shift;
+
+   return unless -f ;
+
+   open (FH, $_);
+   $crc = crc32(*FH);
+   close (FH);
+
+   unless ($crchash{$crc}) {
+      $crchash{$crc} = [ $_ ];
+      return;
+   }
+
+   # so we know there's an entry for this CRC
+
+   foreach $possibledupe ( @{$crchash{$crc}}) {
+ 
+      if  (compare($_, $possibledupe == 0) ) { # if they're the same,
+          print "Unlinking " unless $testmode;
+          print "$_ duplicate of\n\t$possibledupe\n";
+          unlink $_ unless $testmode;
+          $count++;
+         return;
+      }
+      # so if they're the same, print so, and then return. 
+   }
+
+   push @{$crchash{$crc}}, $_;
+
+}

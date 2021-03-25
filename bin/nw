@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+
+open OUT, "|osascript >/dev/null";
+
+use Cwd;
+
+$pwd = getcwd();
+
+if ( $ARGV[0] ) {
+
+    $_ = <<EOF;
+set pwd to quoted form of "$pwd"
+set argv to quoted form of "$ARGV[0]"
+tell application "Terminal"
+	do script ("wcolor ; cd " & pwd & " ; cd " & argv )
+end tell
+EOF
+
+}
+else {
+
+    $_ = <<EOF;
+set pwd to quoted form of "$pwd"
+tell application "Terminal"
+	do script ("wcolor ; cd " & pwd )
+end tell
+EOF
+}
+
+tr/\cJ/\cM/;
+print OUT $_;
+
+close OUT;

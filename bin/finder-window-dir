@@ -1,0 +1,12 @@
+#!/usr/bin/osascript
+
+-- tell application "Finder" to if window 1 exists then if target of window 1 as string is not ":" then get POSIX path of (target of window 1 as alias)
+
+tell application "Finder"
+	try
+		POSIX path of (target of window 1 as alias)
+	on error
+		POSIX path of (path to desktop folder as alias)
+	end try
+end tell
+

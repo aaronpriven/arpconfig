@@ -1,0 +1,45 @@
+#! /usr/bin/perl -w
+    eval 'exec /usr/bin/perl -S $0 ${1+"$@"}'
+        if 0; #$running_under_some_shell
+
+use strict;
+use File::Find ();
+use File::Copy;
+use File::Basename;
+
+# Set the variable $File::Find::dont_use_nlink if you're using AFS,
+# since AFS cheats.
+
+# for the convenience of &wanted calls, including -eval statements:
+use vars qw/*name *dir *prune/;
+*name   = *File::Find::name;
+*dir    = *File::Find::dir;
+*prune  = *File::Find::prune;
+
+sub wanted;
+
+
+
+# Traverse desired filesystems
+File::Find::find({wanted => \&wanted}, '.');
+exit;
+
+
+sub wanted {
+    my $basename = basename($name);
+    my $newname = $basename;
+    $newname = mytr ($newname);
+    my $newdir = $dir;
+    $newdir =~ s#^\.#/Volumes/zappy#;
+    # change "\." to the mountpoint of your drive
+    # and "/Volumes/zappy/" to where you want to copy the files
+    $newdir = mytr ($newdir);
+    print "copying $dir/$basename to $newdir/$newname\n";
+    #copy("$dir/$name" , "$newdir/$newname") or die "Copy failed: $!";
+}
+
+sub mytr {
+   local $_ = shift;
+   tr/A-Za-z0-9\(\)\{\}\-\_\!\@\#\$\%\^\&\`\'\.\//_/c;
+   return $_;
+}

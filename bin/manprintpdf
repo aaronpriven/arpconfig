@@ -1,0 +1,5 @@
+#!/bin/csh
+
+set myman=`man -W $1`
+
+groff -man -Tps -fN $myman | gs -q -sPAPERSIZE=letter -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=- -

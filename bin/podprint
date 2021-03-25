@@ -1,0 +1,3 @@
+#!/bin/sh
+
+pod2man $* | groff -man -Tps -fN | lp -o sides=two-sided-long-edge 

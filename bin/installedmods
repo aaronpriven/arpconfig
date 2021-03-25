@@ -1,0 +1,8 @@
+#!/ActivePerl/bin/perl
+
+use ExtUtils::Installed;
+
+print join("\n" , @INC) , "\n\n";
+my $inst    = ExtUtils::Installed->new();
+my @modules = $inst->modules();
+print join("\n" , @modules) , "\n";

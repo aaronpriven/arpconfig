@@ -1,0 +1,81 @@
+#!/ActivePerl/bin/perl
+
+use File::Find;
+use String::CRC32;
+use File::Compare;
+use Image::Info qw(image_info dim);
+
+our $count = 0;
+$arg = lc shift @ARGV;
+
+if ($arg eq "kill") {
+   $doit = "k";
+} elsif ($arg eq "move") {
+   $doit = "m";
+}
+
+mkdir "/tmp/moved";
+
+%crchash = ();
+@files = ();
+
+find ( { wanted => \&wanted, no_chdir => 1 } , '.');
+
+sub wanted {
+
+   push @files, $_ if -f $_;
+}
+
+foreach $file (reverse sort @files) {
+   docomparison ($file) ;
+   # do the comparison 
+}
+
+print "\nFinal count: $count\n";
+
+sub docomparison {
+   my ($file) = shift;
+   open (FH, $file);
+   $crc = crc32(*FH);
+   close (FH);
+   unless ($crchash{$crc}) {
+      $crchash{$crc} = [ $file ];
+      return;
+   }
+   # so we know there's an entry for this CRC
+   foreach $possibledupe ( @{$crchash{$crc}}) {
+      if  (compare($file, $possibledupe == 0) ) { # if they're the same,
+
+         cull ("$file duplicate of\n\t$possibledupe\n");
+
+         return;
+      }
+   }
+   push @{$crchash{$crc}}, $file;
+}
+
+sub cull {
+
+    print "Unlinking " if $doit eq "k" or $doit eq "z";
+    print "Moving " if $doit eq "m";
+    print (+shift , "\n");
+
+    if ($doit eq "m") {
+       my $basefile = $file;
+       $basefile =~ s%.*/%%;
+
+       my $newfile = $basefile;
+
+       my $copycount = "0";
+       while (-e "/tmp/moved/$newfile") {
+           $newfile = $copycount++ . "-$basefile";
+       }
+       rename $file , "/tmp/moved/$newfile";
+
+    } elsif ($doit eq "k") {
+       unlink $file if $doit eq "k";
+    }
+    our $count;
+    $count++;
+}
+

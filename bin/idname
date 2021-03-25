@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+# prints the number needed to get a specific letter name in an Indesign page
+# maximum: 99999 = eqxc
+$a = "a";
+for (1 .. 99999) {
+  $hash{$a++} = $_;
+}
+
+print $hash{lc($ARGV[0])} , "\n";
+
+__END__
+
+Really, computers are too fast these days. I spent more time trying to figure
+out the right formula to calculate this properly than it would ever save to
+actually do so, given that the computer runs this program in .07 seconds.

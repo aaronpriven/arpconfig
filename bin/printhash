@@ -1,0 +1,23 @@
+#!/usr/bin/perl
+
+sub natatime ($@);
+
+@l = eval join(" " , @ARGV);
+
+$i = natatime (2, @l);
+while (my @v = $i->())
+   {
+       print "$v[0]\t$v[1]\n";
+   }
+
+
+sub natatime ($@)
+{
+    my $n = shift;
+    my @list = @_;
+
+    return sub
+    {
+        return splice @list, 0, $n;
+    }
+}

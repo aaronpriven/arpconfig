@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+#
+# Usage: rename perlexpr [files]
+
+# originally swiped from http://evolt.org/renaming_files_with_perl
+
+($regexp = shift @ARGV) || die "Usage:  rename perlexpr [filenames]\n";
+
+#chdir "/Users/apriven/Desktop/latestschem";
+
+#$regexp = 's/^(\d\d)([A-Z]*)-/0$1$2-/';
+
+if (!@ARGV) {
+   @ARGV = <STDIN>;
+   chomp(@ARGV);
+}
+
+
+foreach $_ (@ARGV) {
+   $old_name = $_;
+   eval $regexp;
+   die $@ if $@;
+   next if $old_name eq $_;
+   if (-e $_) { # not in original evolt version
+      warn "can't rename $old_name: $_ already exists\n";
+      next;
+   }
+   print "$old_name => $_\n";
+   #rename($old_name, $_) or die $!;
+}
+
+exit(0);

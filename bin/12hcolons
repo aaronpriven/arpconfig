@@ -1,0 +1,44 @@
+#!/usr/bin/perl -pi.bak
+
+chomp;
+
+@array = split (/\t/);
+
+foreach (@array) {
+
+   s/\s+$//;
+   next unless ( /^[\d:]+(\*)?$/) ;
+
+   if (/\*$/) {
+      $star = substr ($_, -1, 1, "");
+   } else {
+      $star = ""
+   }
+
+   $min = substr ($_, -2, 2, "");
+
+   s/://;
+
+
+   $ampm = "a";
+
+   if ($_ == 12) {
+      $ampm = "p";
+
+   } elsif ($_ > 12) {;
+
+      $ampm = "p";
+      $_ -= 12;
+
+   } elsif ($_ == 0) {
+
+      $_ = "12";
+
+   } # otherwise it's between 1 and 11 inclusive so leave it alone
+      
+   $_ = "$_:$min" . $ampm . $star;
+
+}
+
+$_ = join("\t" , @array) . "\n";
+

@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use Image::Info qw(image_info dim);
+
+while (<*>) {
+
+    my ($info) = image_info($_);
+
+    next if ($info->{error}) ;
+
+    my ($width, $height) = dim($info);
+    my ($pixels) = $width * $height;
+
+#    next if ($width > 150 and $height > 150 and $pixels > (50000));
+#    next unless ( abs (1280 - $width) < 50) and (abs(1024-$height) <50);
+
+    print "$_: ${width}x$height (total $pixels pixels)\n";
+#    print "$pixels $_\n";
+
+}
+
+

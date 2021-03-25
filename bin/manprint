@@ -1,0 +1,5 @@
+#!/bin/csh
+
+set myman=(`man -w $*`)
+
+groff -man -Tps -fN $myman | lp -o sides=two-sided-long-edge 

@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+
+@ary = <STDIN>;
+
+@ary = sort { length ($a) <=> length ($b) } @ary;
+
+print @ary;

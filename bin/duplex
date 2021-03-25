@@ -1,0 +1,2 @@
+#!/bin/sh
+lp -o sides=two-sided-long-edge

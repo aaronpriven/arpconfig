@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+#
+# Usage: +be item [files]
+
+
+use File::Basename;
+
+($word = shift @ARGV) || die "Usage:  rename perlexpr [filenames]\n";
+
+if (!@ARGV) {
+   @ARGV = <STDIN>;
+   chomp(@ARGV);
+}
+
+
+foreach $_ (@ARGV) {
+   $old_name = $_;
+   
+   my ($base, $path, $ext) = fileparse($old_name, qr{\..*});
+   
+   $_ = $path . $base . " $word" . $ext;
+   
+   die $@ if $@;
+   if (-e $_) { # not in original evolt version
+      warn "can't rename $old_name: $_ already exists\n";
+      next;
+   }
+   rename($old_name, $_) unless $old_name eq $_ ;
+   #print $_ , "\n";
+}
+
+exit(0);

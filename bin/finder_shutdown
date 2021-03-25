@@ -1,0 +1,6 @@
+#!/bin/csh
+osascript <<EOF &
+  tell application "System Events"
+     shut down
+  end tell
+EOF

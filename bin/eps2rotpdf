@@ -1,0 +1,6 @@
+#!/bin/tcsh
+
+foreach f ($*)
+   /opt/local/bin/gs -sDEVICE=pdfwrite -sOutputFile="$f.pdf" -dNOPAUSE -dEPSCrop -c "<</Orientation 1>> setpagedevice" -f "$f" -c quit  
+
+end

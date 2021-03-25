@@ -1,0 +1,263 @@
+#!/usr/bin/env perl
+
+use utf8;
+use 5.016;
+binmode STDIN, ":utf8";
+
+use File::Slurp::Tiny(qw/read_file write_file/);
+use POSIX ('floor');
+
+my @entries = (
+    [ black   => [ 0,   0, 0.00 ] ],
+    [ grey    => [ 0,   0, 0.10 ] ],
+    [ gray    => [ 0,   0, 0.10 ] ],
+    [ red     => [ 0,   1, 0.15 ] ],
+    [ brick   => [ 30,  1, 0.15 ] ],
+    [ brown   => [ 45,  1, 0.15 ] ],
+    [ olive   => [ 60,  1, 0.10 ] ],
+    [ grass   => [ 90,  1, 0.15 ] ],
+    [ green   => [ 120, 1, 0.15 ] ],
+    [ pine    => [ 150, 1, 0.15 ] ],
+    [ aqua    => [ 165, 1, 0.15 ] ],
+    [ teal    => [ 180, 1, 0.15 ] ],
+    [ azure   => [ 210, 1, 0.15 ] ],
+    [ blue    => [ 240, 1, 0.15 ] ],
+    [ indigo  => [ 270, 1, 0.15 ] ],
+    [ violet  => [ 285, 1, 0.15 ] ],
+    [ purple  => [ 300, 1, 0.15 ] ],
+    [ plum    => [ 315, 1, 0.15 ] ],
+    [ rose    => [ 330, 1, 0.15 ] ],
+);
+
+my $name = shift @ARGV;
+my $fname = fc($name);
+
+if ($fname eq fc('colors') or $fname eq fc('c')) {
+    foreach my $entry (@entries) {
+        print $entry->[0], " ";
+    }
+    print "\n";
+    exit;
+}
+
+if ($fname eq fc('colors_rgb') ) {
+    foreach my $entry (@entries) {
+        my @rgb = hsv2rgb(@{$entry->[1]});
+        my @lrgb = hsv2rgb($entry->[1][0],$entry->[1][1]*.15, 0.9);
+
+    foreach (@rgb, @lrgb) {
+        $_ = floor( $_ * 255 );    # 8 bit RGB values 
+        $_ = 65535 if $_ > 255;
+        $_ = 0 if $_ < 0;
+    }
+
+
+        print $entry->[0];
+        print "\t" , join("/" , @rgb), "\t" , sprintf("#%02x%02x%02x", @rgb);
+        say "\t" , join("/" , @lrgb), "\t" , sprintf("#%02x%02x%02x", @lrgb);
+    }
+    exit;
+}
+
+if ( $fname eq fc('hsv') or $fname eq fc('h') ) {
+    my @hsv = @ARGV[ 0, 1, 2 ];
+    changecolor_hsv( \@hsv );
+}
+
+if ( $fname eq fc('rgb') or $fname eq fc('r') ) {
+    my @rgb = @ARGV[ 0, 1, 2 ];
+    changecolor_rgb( \@rgb );
+}
+
+if ( $fname eq fc('rgb16') or $fname eq fc('r16') ) {
+    my @rgb16 = @ARGV[ 0, 1, 2 ];
+    changecolor_rgb_16( \@rgb16 );
+}
+
+if ($name) {
+    colorbyname( $name, \@entries );
+    exit 0;
+}
+
+my $file = glob('~/.wcolor');
+my $hue;
+
+#if (rand() < .05) {
+#   changecolor_rgb ([40, 40, 40]);
+#}
+
+if ( -e $file ) {
+    #$hue = ( read_file($file) + 70 + rand(40) ) % 360;
+    # so moves between 70 and 110 degrees...
+    $hue = ( read_file($file) + 75 ) % 360;
+}
+else {
+    $hue = int( rand(24) ) * 15;
+}
+
+write_file( $file, $hue );
+
+changecolor_hsv([$hue, 1, 0.15]);
+
+sub colorbyname {
+    my $argname = fc(shift);
+
+    my @entries = @{ +shift };
+
+    my %hsv_of;
+
+    foreach my $entry (@entries) {
+        my $name = fc( $entry->[0] );
+
+        if ( $name eq $argname ) {
+            changecolor_hsv( $entry->[1] );
+        }
+        $hsv_of{$name} = $entry->[1];
+
+    }
+
+    my $regexp = qr/^\Q$argname/;
+    my @matches;
+
+    foreach my $name ( keys %hsv_of ) {
+        if ( $name =~ $regexp ) {
+            push @matches, $name;
+        }
+    }
+
+    if ( @matches == 1 ) {
+        changecolor_hsv( $hsv_of{ $matches[0] } );
+    }
+    elsif ( @matches == 0 ) {
+        die "No color found matching $argname.\n";
+    }
+    else {
+        die "Multiple matches found for $argname:\n  "
+          . join( "  \n", sort @matches ) . "\n";
+    }
+
+} ## tidy end: sub colorbyname
+
+sub changecolor_hsv {
+
+    my @hsv = @{ +shift };
+
+    my @rgb = hsv2rgb(@hsv);
+
+    foreach (@rgb) {
+        $_ = floor( $_ * 65536 );    # 16 bit RGB values for Terminal
+        $_ = 65535 if $_ > 65535;
+        $_ = 0 if $_ < 0;
+    }
+
+    changecolor_rgb_16( \@rgb );
+
+}
+
+sub changecolor_rgb {
+
+    my @rgb = @{ +shift };
+    foreach (@rgb) {
+        $_ = floor( $_ * 257 );     # 16 bit RGB values for Terminal
+        $_ = 65535 if $_ > 65535;
+        $_ = 0 if $_ < 0;
+    }
+
+    changecolor_rgb_16( \@rgb );
+
+}
+
+sub changecolor_rgb_16 {
+    my @rgb = @{ +shift };
+
+    if ($ENV{TERM_PROGRAM} =~ /iTerm/) {
+
+       my @rgbhex = map { sprintf '%02x' , ($_/256) } @rgb;
+       my $rgbhex = join('', @rgbhex);
+
+       #print STDOUT $rgbhex;
+
+       print STDOUT "\c[]1337;SetColors=bg=rgb:$rgbhex\cG";
+
+       exit 0;
+
+
+    } 
+
+    my ( $red, $green, $blue ) = @rgb;
+
+    my $script = qq[tell application "Terminal" to set background color ]
+      . "of front window to { $red, $green, $blue }";
+
+    exec '/usr/bin/osascript', '-e', $script;
+
+    # no it never returns, no it never returns, and its fate
+    # is still unlearned
+
+    die "Couldn't run script to change window color: $!";
+
+}
+
+sub hsv2rgb {
+    my ( $h, $s, $v ) = @_;
+
+    if ( $s == 0 ) {
+        return $v, $v, $v;
+    }
+
+    $h /= 60;
+    my $i = floor($h);
+    my $f = $h - $i;
+    my $p = $v * ( 1 - $s );
+    my $q = $v * ( 1 - $s * $f );
+    my $t = $v * ( 1 - $s * ( 1 - $f ) );
+
+    if ( $i == 0 ) {
+        return $v, $t, $p;
+    }
+    elsif ( $i == 1 ) {
+        return $q, $v, $p;
+    }
+    elsif ( $i == 2 ) {
+        return $p, $v, $t;
+    }
+    elsif ( $i == 3 ) {
+        return $p, $q, $v;
+    }
+    elsif ( $i == 4 ) {
+        return $t, $p, $v;
+    }
+    else {
+        return $v, $p, $q;
+    }
+} ## tidy end: sub hsv2rgb
+
+
+
+__END__
+
+
+#!/usr/bin/osascript
+
+tell application "Terminal"
+	
+	set a to random number 17408
+	set b to random number 13056
+	
+	set r to random number 6
+	
+	if r = 1 then
+		set background color of front window to {a, b, 0}
+	else if r = 2 then
+		set background color of front window to {a, 0, b}
+	else if r = 3 then
+		set background color of front window to {0, a, b}
+	else if r = 4 then
+		set background color of front window to {b, 0, a}
+	else if r = 5 then
+		set background color of front window to {b, a, 0}
+	else
+		set background color of front window to {0, b, a}
+	end if
+	
+end tell

@@ -1,0 +1,145 @@
+set completion-ignore-case on
+set completion-map-case on
+set mark-directories on
+set editing-mode emacs
+set colored-completion-prefix on
+set colored-stats on
+set mark-symlinked-directories on
+#set show-mode-in-prompt on 
+set vi-cmd-mode-string "\1\x1b[2 q\2" # block cursor
+set vi-ins-mode-string "\1\x1b[6 q\2" # bar cursor
+
+set revert-all-at-newline on
+
+# none of the below will actually mean anything unless 
+# editing-mode is set to vi
+
+set keymap vi-command
+C-d: possible-completions
+
+set keymap vi-insert
+
+# vi-insert normally sets control - ? h i j m r s t u v w y
+C-@: set mark (like emacs)
+C-a: beginning-of-line (like emacs)
+C-b: backward-char (like emacs)
+C-c: character-search (emacs is blank; character-search is on ^]) 
+C-d: delete-char-or-list (emacs has delete-char)
+C-e: end-of-line (like emacs)
+C-f: forward-char (like emacs)
+C-g: abort (like emacs)
+C-k: kill-line (like emacs)
+C-l: clear-screen (like emacs)
+C-n: next-history (like emacs)
+C-o: operate-and-get-next (like emacs)
+# Accept the current line for execution and fetch the next line relative to the current line from the history for editing. Any argument is ignored.
+C-p: previous-history (like emacs)
+C-q: quoted-insert (like emacs) duplicate of C-v 
+C-z: undo (emacs - no value)
+
+C-]: forward-word (emacs: character search)
+C-g: possible-completions (emacs: is abort)
+C-_: backward-word (emacs: is undo)
+
+"\C-^!": possible-command-completions (emacs: ^X!)
+"\C-^$": possible-variable-completions (emacs: ^X$)
+"\C-^/": possible-filename-completions (emacs: ^X/)
+"\C-^=": possible-completions (emacs: escape =)
+"\C-^?": possible-completions (emacs: escape ?)
+"\C-^@": possible-hostname-completions (emacs: ^X@)
+"\C-^g": glob-list-expansions (emacs: ^Xg)
+"\C-^*": glob-list-expansions (emacs: ^Xg)
+"\C-^~": possible-username-completions
+"\C-x": 
+"\C-x!": complete-command (emacs: escape, not ^X)
+"\C-x$": complete-variable (emacs: escape, not ^X)
+"\C-x&": insert-completions (emacs: escape *)
+"\C-x(": start-kbd-macro
+"\C-x)": end-kbd-macro
+"\C-x*": glob-expand-word 
+"\C-x-": digit-argument (emacs: escape, not ^X)
+"\C-x.": yank-last-arg (emacs: escape, not ^X)
+"\C-x/": complete-filename (emacs: escape, not ^X)
+"\C-x0": digit-argument (emacs: escape, not ^X)
+"\C-x1": digit-argument (emacs: escape, not ^X)
+"\C-x2": digit-argument (emacs: escape, not ^X)
+"\C-x3": digit-argument (emacs: escape, not ^X)
+"\C-x4": digit-argument (emacs: escape, not ^X)
+"\C-x5": digit-argument (emacs: escape, not ^X)
+"\C-x6": digit-argument (emacs: escape, not ^X)
+"\C-x7": digit-argument (emacs: escape, not ^X)
+"\C-x8": digit-argument (emacs: escape, not ^X)
+"\C-x9": digit-argument (emacs: escape, not ^X)
+"\C-x<": beginning-of-history (emacs: escape, not ^X)
+"\C-x=": possible-completions (emacs: escape, not ^X)
+"\C-x>": end-of-history (emacs: escape, not ^X)
+"\C-x?": possible-completions (emacs: escape, not ^X)
+"\C-x@": complete-hostname (emacs: escape, not ^X)
+"\C-xA": do-lowercase-version
+"\C-xB": do-lowercase-version
+"\C-xC": do-lowercase-version
+"\C-xD": do-lowercase-version
+"\C-xE": do-lowercase-version
+"\C-xF": do-lowercase-version
+"\C-xG": do-lowercase-version
+"\C-xH": do-lowercase-version
+"\C-xI": do-lowercase-version
+"\C-xJ": do-lowercase-version
+"\C-xK": do-lowercase-version
+"\C-xL": do-lowercase-version
+"\C-xM": do-lowercase-version
+"\C-xN": do-lowercase-version
+"\C-xO": do-lowercase-version
+"\C-xP": do-lowercase-version
+"\C-xQ": do-lowercase-version
+"\C-xR": do-lowercase-version
+"\C-xS": do-lowercase-version
+"\C-xT": do-lowercase-version
+"\C-xU": do-lowercase-version
+"\C-xV": do-lowercase-version
+"\C-xW": do-lowercase-version
+"\C-xX": do-lowercase-version
+"\C-xY": do-lowercase-version
+"\C-xZ": do-lowercase-version
+"\C-x\C-?": backward-kill-line
+"\C-x\C-\\": backward-kill-word (emacs: escape, not ^X)
+"\C-x\C-]": character-search-backward (emacs: escape, not ^X)
+"\C-x\C-e": edit-and-execute-command
+"\C-x\C-e": shell-expand-line (emacs: escape, not ^X)
+"\C-x\C-g": abort
+"\C-x\C-g": abort (emacs: escape, not ^X)
+"\C-x\C-h": backward-kill-word (emacs: escape, not ^X)
+"\C-x\C-i": dynamic-complete-history (emacs: escape, not ^X)
+"\C-x\C-r": re-read-init-file 
+#"\C-x\C-r": revert-line (emacs: escape, not ^X)
+"\C-x\C-u": undo
+"\C-x\C-v": display-shell-version
+"\C-x\C-x": exchange-point-and-mark
+"\C-x\C-y": yank-nth-arg (emacs: escape, not ^X)
+"\C-x\\": delete-horizontal-space (emacs: escape, not ^X)
+"\C-x\e": complete (emacs: escape, not ^X)
+"\C-x^": history-expand-line (emacs: escape, not ^X)
+"\C-x_": yank-last-arg (emacs: escape, not ^X)
+"\C-xb": backward-word (emacs: escape, not ^X)
+"\C-xc": capitalize-word (emacs: escape, not ^X)
+"\C-xd": kill-word (emacs: escape, not ^X)
+"\C-xe": call-last-kbd-macro
+"\C-xf": forward-word (emacs: escape, not ^X)
+"\C-xg": glob-complete-word (emacs: escape, not ^X)
+"\C-xl": downcase-word (emacs: escape, not ^X)
+"\C-xn": non-incremental-forward-search-history (emacs: escape, not ^X)
+"\C-xp": non-incremental-reverse-search-history (emacs: escape, not ^X)
+"\C-xr": revert-line (emacs: escape, not ^X)
+"\C-xt": transpose-words (emacs: escape, not ^X)
+"\C-xu": upcase-word (emacs: escape, not ^X)
+"\C-xy": yank-pop (emacs: escape, not ^X)
+"\C-x{": complete-into-braces (emacs: escape, not ^X)
+"\C-x~": complete-username (emacs: escape, not ^X)
+
+set keymap emacs
+
+"\C-z": undo (normally not set)
+"\C-_": backward-word (normally undo)
+"\C-]": forward-word (normally character-search)
+"\C-xc": character-search (normally not set)
+"\C-d": delete-char-or-list (normally delete-char)

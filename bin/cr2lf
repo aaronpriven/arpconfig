@@ -1,0 +1,5 @@
+#!/usr/bin/perl -pi -0777
+#  !/usr/bin/perl -pi.bak -0777
+
+s/\cM/\cJ/g;
+

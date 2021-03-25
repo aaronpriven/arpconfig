@@ -1,0 +1,13 @@
+#!/usr/bin/perl
+
+$c = shift (@ARGV);
+
+$a9 = sqrt(81/337) * $c;
+$b9 = sqrt(256/337) * $c;
+
+$a = 3/5*$c;
+$b = 4/5*$c;
+
+print "Diagonal -- $c\n";
+printf "4:3 ratio: %.2f h x %.2f w\n" , $a, $b;
+printf "16:9 ratio: %.2f h x %.2f w\n" , $a9, $b9;

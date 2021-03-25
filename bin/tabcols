@@ -1,0 +1,40 @@
+#!/ActivePerl/bin/perl
+
+use strict;
+use warnings;
+
+use 5.010;
+
+use List::Util;
+
+my @a = @ARGV;
+say STDERR @a;
+my @lengths;
+
+while (<>) {
+   chomp;
+   my @fields = split (/\t/);
+   for my $idx (0 .. $#fields) {
+      my $len = length($fields[$idx]);
+      if (not $lengths[$idx]) {
+         $lengths[$idx] = $len;
+      } else {
+         $lengths[$idx] = List::Util::max($lengths[$idx] , $len);
+      }
+   }
+}
+
+close ARGV;
+
+my @ARGV = @a;
+
+say STDERR @ARGV;
+
+while (<>) {
+   chomp;
+   my @fields = split ("\t");
+   for my $idx (0 .. $#fields) {
+      $fields[$idx] = sprintf( '%-*s' , $lengths[$idx] , $fields[$idx]);
+   }
+   say join (" " , @fields);
+}

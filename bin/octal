@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+
+foreach (@ARGV) {
+
+  printf "%o %x\n" , $_ , $_ ;
+
+}

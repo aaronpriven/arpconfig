@@ -1,0 +1,72 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Image::Info qw(image_info dim);
+
+my $basedir = $ARGV[0];
+
+die "Usage: $0 <directory>\n" unless $basedir;
+
+$basedir =~ s#/$##;
+
+my ($ratio, $width, $height, $printratio, $dir, @files);
+
+use File::Find;
+
+find ( { wanted => \&wanted, no_chdir => 1 } , '.');
+
+sub wanted {
+
+   unless ( $File::Find::dir =~ /ratio-/ ) {
+      push @files, $_  if /\.(?i:jpg|jpeg|gif|bmp|png|tiff|tif)$/;
+   }
+}
+
+foreach my $file (@files) {
+
+   my ($info) = image_info($file);
+
+   if ($info->{error}) {
+      $ratio = 0;
+      $printratio = "No Info"
+   } else {
+      ($width, $height) = dim($info);
+      if ($height == 0) {
+         $ratio = 0;
+         $printratio = "No Info";
+      } else {
+         $ratio = $width/$height;
+         $printratio = sprintf("%.3f", $width/$height);
+      }
+   }
+
+   if ( 0 == $ratio ) { 
+       $dir = "no_info"
+   } elsif ($ratio > 0.9 and $ratio < 1.1 ) {
+       $dir = "square"
+   } elsif ($ratio < 1) {
+       $dir = "portrait"
+   } elsif ($ratio > 1.5  ) {
+       $dir = "wide"
+   } else {
+       $dir = "rect"
+   }
+
+   $dir = "ratio-$dir";
+
+   print "$file : $dir : $printratio (${width}x$height)\n";
+
+   mkdir "$basedir/$dir" unless -d "$basedir/$dir";
+
+   my ($basefile) = $file;
+   $basefile =~ s#.*/##;
+
+   my $newfile = "$basedir/$dir/$basefile";
+   print "Already exists: $newfile\n" if -e $newfile;
+
+   rename $file , $newfile unless -e $newfile;
+   #print "$file \t $newfile\n" unless -e $newfile;
+
+}

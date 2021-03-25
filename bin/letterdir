@@ -1,0 +1,55 @@
+#!/usr/bin/perl -w
+
+
+$basedir = $ARGV[0];
+
+die "Usage: $0 <directory>\n" unless $basedir;
+
+$basedir =~ s#/$##;
+
+foreach $file (<*>) {
+
+   next unless $file =~ /\.(jpg|jpeg|gif|png|jpe)(.1)?$/i;
+
+   $_ = substr($file, 0, 1);
+
+   if (/[0-9A-PSTa-pst]/) {
+
+       $dir = $_;
+   
+   } elsif  (/[QRqr]/) {
+
+       $dir = "qr";
+
+   } elsif  (/[UVuv]/) {
+
+       $dir = "uv";
+
+   } elsif  (/[WXYZwxyz]/) {
+
+       $dir = "wxyz";
+
+#   } elsif  (/[0-9]/) {
+
+#       $dir = "0 numbers";
+
+   } else {
+ 
+       $dir = '@ symbols';
+
+   } 
+
+
+   $dir = lc($dir);
+
+   mkdir "$basedir/$dir" unless -d "$basedir/$dir";
+
+   $newfile = "$basedir/$dir/$file";
+   print "Already exists: $newfile\n" if -e $newfile;
+
+   rename $file , $newfile unless -e $newfile;
+
+
+ 
+
+}

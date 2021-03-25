@@ -1,0 +1,8 @@
+#!/usr/bin/perl
+
+foreach (@ARGV) {
+
+   print "====\n$_\n";
+   system ('/usr/bin/GetFileInfo', $_)
+
+}

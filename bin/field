@@ -1,0 +1,40 @@
+#!/usr/bin/env perl
+
+use 5.010;
+use warnings;
+use strict;
+
+my $sep = "\t";
+
+my (@files, @fields);
+foreach (@ARGV) {
+   if ( $_ eq '-s' ) {
+      $sep = ' ';
+      next;
+   }
+   if ( $_ =~ /\A\d+\z/) {
+      push @fields , $_;
+   }
+   else {
+      push @files , $_;
+   }
+}
+
+@ARGV = @files;
+
+while (<>) {
+   chomp;
+   unless ($_) {
+      print;
+      next;
+   }
+   my @allfields = split (/$sep/);
+   my @thesefields;
+   foreach my $field (@fields) {
+      push @thesefields, $allfields[$field] // q{};
+   }
+
+   say join("\t" , @thesefields);
+
+}
+

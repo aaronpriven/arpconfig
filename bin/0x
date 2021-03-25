@@ -1,0 +1,9 @@
+#!/usr/bin/env perl
+
+use 5.016;
+use warnings;
+
+foreach (@ARGV) {
+   printf '%02x ' , $_;
+}
+say '';

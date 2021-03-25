@@ -1,0 +1,3 @@
+#!/bin/sh
+
+pod2man `perldoc -l $*` -c " " -r " " | groff -man -Tps -fN | gs -q -sPAPERSIZE=letter -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=- - | open -f -a Preview 

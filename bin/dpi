@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+
+($c , $hres) = (@ARGV);
+
+die "Usage: $0 <visible diagonal measure> <horizontal resolution>\n" 
+     unless $c and $hres;
+
+
+$dpi = $hres / (sqrt (($c**2) * (16/25)));
+
+print "$dpi\n";

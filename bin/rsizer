@@ -1,0 +1,42 @@
+#!/usr/bin/perl
+
+use File::Find;
+use String::CRC32;
+use File::Compare;
+use Image::Info qw(image_info dim);
+
+our $count = 0;
+
+$arg = shift @ARGV;
+
+$arg = lc ($arg);
+
+$testmode = 1 unless $arg eq "killem" ;
+
+%crchash = ();
+
+@files = ();
+
+find ( { wanted => \&wanted, no_chdir => 1 } , '.');
+
+sub wanted {
+
+   push @files, $_;
+
+}
+
+foreach $file (reverse sort @files) {
+
+    my ($info) = image_info($file);
+
+    next if ($info->{error}) ;
+
+    my ($width, $height) = dim($info);
+    my ($pixels) = $width * $height;
+
+    next unless ( $width > 1220 and $height > 980 and  
+               abs (1.25 - $width/$height) < .1);
+
+    print "$file: ${width}x$height (total $pixels pixels)\n";
+
+}
