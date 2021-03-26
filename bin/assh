@@ -1,0 +1,8 @@
+#!/usr/bin/osascript
+#
+on run argv
+tell application "Terminal"
+   set newWindow to do script "ssh " & item 1 of argv & "; exit"
+   set current settings of newWindow to settings set "Aarons Light"
+end tell
+end run

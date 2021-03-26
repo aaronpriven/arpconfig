@@ -1,0 +1,38 @@
+#!/usr/bin/env perl
+
+use 5.010;
+use strict;
+use warnings;
+
+my $apikey = $ENV{AC_API_KEY};
+
+use LWP::Simple;
+
+my $display_url_only;
+
+if ( $ARGV[0] eq '-u' ) {
+    $display_url_only = 1;
+    shift @ARGV;
+}
+
+my $args = "@ARGV";
+
+$args .= '?' unless $args =~ /\?/;
+
+die "no arguments" unless $args;
+
+my $url
+  = "http://api.actransit.org/transit/"
+  . $args
+  . "&token=" . $apikey;
+
+if ($display_url_only) {
+    say $url;
+    exit;
+}
+
+my $content = get($url) or die 'Unable to get page';
+
+open( my $jsontool, '|-', 'python -m json.tool' ) // die "Can't fork: $!";
+
+say $jsontool $content;

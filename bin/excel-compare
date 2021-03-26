@@ -1,0 +1,11 @@
+#!/bin/csh
+
+set new=$EXCEL_COMPARE_NEW
+set old=$EXCEL_COMPARE_OLD
+
+#cp $base/$old/rawskeds/$1 /tmp/$old-$1
+#cp $base/$new/rawskeds/$1 /tmp/$new-$1
+cp $old/$1 /tmp/old-$1
+cp $new/$1 /tmp/new-$1
+
+open -a "Microsoft Excel" /tmp/old-$1 /tmp/new-$1
