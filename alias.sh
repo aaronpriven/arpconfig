@@ -31,7 +31,6 @@ alias pf='perldoc -f'
 alias preview='open -a Preview'
 alias readable='chmod a+r'
 alias ren='mv -i'
-alias rex='ssh octavian@mac52000.local'
 alias sf=SetFile
 alias ss='actium.pl ss'
 alias t="tree -A"
@@ -43,10 +42,12 @@ alias wordtemplate='SetFile -t W8TN -c MSWD'
 
 alias realvi=/usr/bin/vi
 
-if [  -f ~/bin/mvim ]; then
-   alias vi=~/bin/mvim
-   alias vih='~/bin/mvim +Headway'
+mvim_command=`which mvim`
+if [  ! -z "$mvim_command" ]; then
+   alias vi="$mvim_command"
+   alias vih="$mvim_command +Headway"
 fi
+
 
 alias ?%=printhash
 
