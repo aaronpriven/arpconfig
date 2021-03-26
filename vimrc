@@ -4,15 +4,19 @@ set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
-"set rtp+=~/.vim/bundle/Vundle.vim
-set rtp+=~/sh/vim/bundle/Vundle.vim
+
+set rtp+=~/.vim/bundle/Vundle.vim
+
+"set rtp+=~/sh/vim/bundle/Vundle.vim
 "call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
-call vundle#begin('~/sh/vim/plugins')
+call vundle#begin('~/.vim/plugins')
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
+" Remember when installing on a new system to run 'PluginInstall' at 
+" a prompt
 
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.

@@ -1,0 +1,12 @@
+1) Set up new Mac with:
+  • latest OS
+  • latest XCode
+  • latest MS Office
+  • latest MacVim
+  • Source Code Pro
+
+2) Aliases in $HOME (run makelinks)
+
+3) Install perlbrew and the most recent stable perl
+
+4) Install dependencies for perl programs (using find-deps.pl or a newer method)

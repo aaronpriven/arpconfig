@@ -1,0 +1,23 @@
+#!/bin/sh
+# links
+
+ln -s "/Users/$USER/arpconfig/bash_profile"  .bash_profile
+ln -s "/Users/$USER/arpconfig/gitignore_global"  .gitignore_global
+ln -s "/Users/$USER/arpconfig/gvimrc" .gvimrc
+ln -s "/Users/$USER/arpconfig/inputrc" .inputrc
+ln -s "/Users/$USER/git/actium/perlcriticrc" .perlcriticrc
+ln -s "/Users/$USER/git/actium/perltidyrc" .perltidyrc
+ln -s "/Users/$USER/arpconfig/plan" .plan
+ln -s "/Users/$USER/arpconfig/vimrc" .vimrc
+ln -s "/Users/$USER/arpconfig" sh
+
+ln -s "/Users/$USER/Library/Mobile Documents/com~apple~CloudDocs" i
+
+ln -s "/Users/$USER/Creative Cloud Files" c
+ln -s "/Users/$USER/Creative Cloud Files/TIDs" t
+
+ln -s "/Users/$USER/Alameda - Contra Costa Transit/PubInfSys - Documents/Actium" a
+ln -s "/Users/$USER/OneDrive - Alameda - Contra Costa Transit/Documents" d
+ln -s "/Users/$USER/OneDrive - Alameda - Contra Costa Transit/git" git
+ln -s "/Users/$USER/Alameda - Contra Costa Transit/PubInfSys - Documents" p 
+ln -s "/Users/$USER/Alameda - Contra Costa Transit/PubInfSys - Documents/Actium/signups" si

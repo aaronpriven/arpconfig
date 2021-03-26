@@ -10,7 +10,7 @@ unset promptoff
 
 # path
 
-PATH=$PATH:~/homebrew/bin/:~/bin:~/git/actium/bin
+PATH=$PATH:~/bin:~/git/arpconfig/bin:~/homebrew/bin/:~/git/actium/bin:~/Applications/MacVim.app/Contents/bin:/Applications/MacVim.app/Contents/bin/
 
 source ~/perl5/perlbrew/etc/bashrc
 
