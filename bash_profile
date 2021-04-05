@@ -16,7 +16,7 @@ source ~/perl5/perlbrew/etc/bashrc
 
 # aliases / functions
 
-. ~/Dropbox\ \(Personal\)/Shell/alias.sh
+. ~/arpconfig/alias.sh
 
 # miscellaneous stuff
 
