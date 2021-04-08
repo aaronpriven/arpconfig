@@ -18,6 +18,10 @@ source ~/perl5/perlbrew/etc/bashrc
 
 . ~/arpconfig/alias.sh
 
+if [ -f ~/bin/localalias.sh ]; then
+   . ~/bin/localalias.sh
+fi
+
 # miscellaneous stuff
 
 set -o ignoreeof
