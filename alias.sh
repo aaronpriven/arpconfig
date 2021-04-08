@@ -15,7 +15,7 @@ alias chdir='cd -P'
 alias cls=clear
 alias copy='cp -i'
 alias cp='cp -i'
-alias d='ls -AFsbk' 
+alias d='ls -AFsbk'
 alias dir='ls -AFbsk'
 alias dl='ls -AFbl'
 alias dvar='setenv DISPLAY :0.0'
@@ -53,13 +53,13 @@ alias ?%=printhash
 
 function perlprint1 () {
 #   set -f
-   perl -I$HOME/bin -Mq -C63 -E "use utf8; say + $* ;" 
+   perl -I$HOME/arpconfig/bin -Mq -C63 -E "use utf8; say + $* ;"
 #   set +f
 }
 
 function perlprint2 () {
 #   set -f
-   perl -I$HOME/bin -Mq -C63 -E "use utf8; sub n {qq/\n/}; print join ( n , + $* ) , n ;" 
+   perl -I$HOME/arpconfig/bin -Mq -C63 -E "use utf8; sub n {qq/\n/}; print join ( n , + $* ) , n ;"
 #   set +f
 }
 
@@ -75,16 +75,16 @@ function pdcc () { perldoc Perl::Critic::Policy::${1}::$2 ; }
 function manfile () { groff -man -Tascii -fN $* | less ; }
 function vp () { vi `perldoc -l "$*"` ;  }
 function vv () { vi `which "$*"` ;  }
-function moosetrait () { 
-   trait=$1; 
+function moosetrait () {
+   trait=$1;
    if [ -z "$trait" ]
    then
-      moosetraitdirectory=`perldoc -l Moose::Meta::Attribute::Native::Trait::Hash`; 
+      moosetraitdirectory=`perldoc -l Moose::Meta::Attribute::Native::Trait::Hash`;
       ls -1 `dirname $moosetraitdirectory` | sed 's/\.pm$//' | fmt
       unset moosetraitdirectory
    else
-      shift ; 
-      perldoc $* Moose::Meta::Attribute::Native::Trait::${trait} ; 
+      shift ;
+      perldoc $* Moose::Meta::Attribute::Native::Trait::${trait} ;
    fi
 }
 
