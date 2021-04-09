@@ -8,31 +8,31 @@ use File::Slurp::Tiny(qw/read_file write_file/);
 use POSIX ('floor');
 
 my @entries = (
-    [ black   => [ 0,   0, 0.00 ] ],
-    [ grey    => [ 0,   0, 0.10 ] ],
-    [ gray    => [ 0,   0, 0.10 ] ],
-    [ red     => [ 0,   1, 0.15 ] ],
-    [ brick   => [ 30,  1, 0.15 ] ],
-    [ brown   => [ 45,  1, 0.15 ] ],
-    [ olive   => [ 60,  1, 0.10 ] ],
-    [ grass   => [ 90,  1, 0.15 ] ],
-    [ green   => [ 120, 1, 0.15 ] ],
-    [ pine    => [ 150, 1, 0.15 ] ],
-    [ aqua    => [ 165, 1, 0.15 ] ],
-    [ teal    => [ 180, 1, 0.15 ] ],
-    [ azure   => [ 210, 1, 0.15 ] ],
-    [ blue    => [ 240, 1, 0.15 ] ],
-    [ indigo  => [ 270, 1, 0.15 ] ],
-    [ violet  => [ 285, 1, 0.15 ] ],
-    [ purple  => [ 300, 1, 0.15 ] ],
-    [ plum    => [ 315, 1, 0.15 ] ],
-    [ rose    => [ 330, 1, 0.15 ] ],
+    [ black  => [ 0,   0, 0.00 ] ],
+    [ grey   => [ 0,   0, 0.10 ] ],
+    [ gray   => [ 0,   0, 0.10 ] ],
+    [ red    => [ 0,   1, 0.15 ] ],
+    [ brick  => [ 30,  1, 0.15 ] ],
+    [ brown  => [ 45,  1, 0.15 ] ],
+    [ olive  => [ 60,  1, 0.10 ] ],
+    [ grass  => [ 90,  1, 0.15 ] ],
+    [ green  => [ 120, 1, 0.15 ] ],
+    [ pine   => [ 150, 1, 0.15 ] ],
+    [ aqua   => [ 165, 1, 0.15 ] ],
+    [ teal   => [ 180, 1, 0.15 ] ],
+    [ azure  => [ 210, 1, 0.15 ] ],
+    [ blue   => [ 240, 1, 0.15 ] ],
+    [ indigo => [ 270, 1, 0.15 ] ],
+    [ violet => [ 285, 1, 0.15 ] ],
+    [ purple => [ 300, 1, 0.15 ] ],
+    [ plum   => [ 315, 1, 0.15 ] ],
+    [ rose   => [ 330, 1, 0.15 ] ],
 );
 
-my $name = shift @ARGV;
+my $name  = shift @ARGV;
 my $fname = fc($name);
 
-if ($fname eq fc('colors') or $fname eq fc('c')) {
+if ( $fname eq fc('colors') or $fname eq fc('c') ) {
     foreach my $entry (@entries) {
         print $entry->[0], " ";
     }
@@ -40,21 +40,20 @@ if ($fname eq fc('colors') or $fname eq fc('c')) {
     exit;
 }
 
-if ($fname eq fc('colors_rgb') ) {
+if ( $fname eq fc('colors_rgb') ) {
     foreach my $entry (@entries) {
-        my @rgb = hsv2rgb(@{$entry->[1]});
-        my @lrgb = hsv2rgb($entry->[1][0],$entry->[1][1]*.15, 0.9);
+        my @rgb  = hsv2rgb( @{ $entry->[1] } );
+        my @lrgb = hsv2rgb( $entry->[1][0], $entry->[1][1] * .15, 0.9 );
 
-    foreach (@rgb, @lrgb) {
-        $_ = floor( $_ * 255 );    # 8 bit RGB values 
-        $_ = 65535 if $_ > 255;
-        $_ = 0 if $_ < 0;
-    }
-
+        foreach ( @rgb, @lrgb ) {
+            $_ = floor( $_ * 255 );    # 8 bit RGB values
+            $_ = 65535 if $_ > 255;
+            $_ = 0     if $_ < 0;
+        }
 
         print $entry->[0];
-        print "\t" , join("/" , @rgb), "\t" , sprintf("#%02x%02x%02x", @rgb);
-        say "\t" , join("/" , @lrgb), "\t" , sprintf("#%02x%02x%02x", @lrgb);
+        print "\t", join( "/", @rgb ), "\t", sprintf( "#%02x%02x%02x", @rgb );
+        say "\t", join( "/", @lrgb ), "\t", sprintf( "#%02x%02x%02x", @lrgb );
     }
     exit;
 }
@@ -62,6 +61,13 @@ if ($fname eq fc('colors_rgb') ) {
 if ( $fname eq fc('hsv') or $fname eq fc('h') ) {
     my @hsv = @ARGV[ 0, 1, 2 ];
     changecolor_hsv( \@hsv );
+}
+
+if ( $fname eq fc('hsv-light') or $fname eq fc('hl') ) {
+    my @hsv = @ARGV[ 0, 1, 2 ];
+    $hsv[2] = 1 - $hsv[2];
+    changecolor_hsv( \@hsv );
+
 }
 
 if ( $fname eq fc('rgb') or $fname eq fc('r') ) {
@@ -74,12 +80,25 @@ if ( $fname eq fc('rgb16') or $fname eq fc('r16') ) {
     changecolor_rgb_16( \@rgb16 );
 }
 
-if ($name) {
+if ( $name and $fname ne fc('light') and $fname ne fc('l') ) {
     colorbyname( $name, \@entries );
     exit 0;
 }
 
-my $file = glob('~/.wcolor');
+my ( $light, $file, $value, $sat );
+
+if ( $fname eq fc('light') or $fname eq fc('l') ) {
+    $light = 1;
+    $sat = .25;
+    $file  = glob('~/.wcolor');
+    $value = .9;
+}
+else {
+    $file  = glob('~/.wcolor-light');
+    $value = .15;
+    $sat = 1;
+}
+
 my $hue;
 
 #if (rand() < .05) {
@@ -97,7 +116,7 @@ else {
 
 write_file( $file, $hue );
 
-changecolor_hsv([$hue, 1, 0.15]);
+changecolor_hsv( [ $hue, $sat, $value ] );
 
 sub colorbyname {
     my $argname = fc(shift);
@@ -136,7 +155,7 @@ sub colorbyname {
           . join( "  \n", sort @matches ) . "\n";
     }
 
-} ## tidy end: sub colorbyname
+}    ## tidy end: sub colorbyname
 
 sub changecolor_hsv {
 
@@ -147,7 +166,7 @@ sub changecolor_hsv {
     foreach (@rgb) {
         $_ = floor( $_ * 65536 );    # 16 bit RGB values for Terminal
         $_ = 65535 if $_ > 65535;
-        $_ = 0 if $_ < 0;
+        $_ = 0     if $_ < 0;
     }
 
     changecolor_rgb_16( \@rgb );
@@ -158,9 +177,9 @@ sub changecolor_rgb {
 
     my @rgb = @{ +shift };
     foreach (@rgb) {
-        $_ = floor( $_ * 257 );     # 16 bit RGB values for Terminal
+        $_ = floor( $_ * 257 );    # 16 bit RGB values for Terminal
         $_ = 65535 if $_ > 65535;
-        $_ = 0 if $_ < 0;
+        $_ = 0     if $_ < 0;
     }
 
     changecolor_rgb_16( \@rgb );
@@ -170,19 +189,18 @@ sub changecolor_rgb {
 sub changecolor_rgb_16 {
     my @rgb = @{ +shift };
 
-    if ($ENV{TERM_PROGRAM} =~ /iTerm/) {
+    if ( $ENV{TERM_PROGRAM} =~ /iTerm/ ) {
 
-       my @rgbhex = map { sprintf '%02x' , ($_/256) } @rgb;
-       my $rgbhex = join('', @rgbhex);
+        my @rgbhex = map { sprintf '%02x', ( $_ / 256 ) } @rgb;
+        my $rgbhex = join( '', @rgbhex );
 
-       #print STDOUT $rgbhex;
+        #print STDOUT $rgbhex;
 
-       print STDOUT "\c[]1337;SetColors=bg=rgb:$rgbhex\cG";
+        print STDOUT "\c[]1337;SetColors=bg=rgb:$rgbhex\cG";
 
-       exit 0;
+        exit 0;
 
-
-    } 
+    }
 
     my ( $red, $green, $blue ) = @rgb;
 
@@ -230,9 +248,7 @@ sub hsv2rgb {
     else {
         return $v, $p, $q;
     }
-} ## tidy end: sub hsv2rgb
-
-
+}    ## tidy end: sub hsv2rgb
 
 __END__
 
