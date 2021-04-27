@@ -10,15 +10,17 @@ unset promptoff
 
 # path
 
-PATH=$PATH:~/bin:~/arpconfig/bin:~/homebrew/bin/:~/git/actium/bin:~/Applications/MacVim.app/Contents/bin:/Applications/MacVim.app/Contents/bin/
+PATH=/opt/homebrew/bin:$PATH:~/bin:~/arpconfig/bin:~/homebrew/bin/:~/git/actium/bin:~/Applications/MacVim.app/Contents/bin:/Applications/MacVim.app/Contents/bin/
 
-source ~/perl5/perlbrew/etc/bashrc
+if [ -e ~/perl5/perlbrew/etc/bashrc ]; then
+    source ~/perl5/perlbrew/etc/bashrc
+fi
 
 # aliases / functions
 
 . ~/arpconfig/alias.sh
 
-if [ -f ~/bin/localalias.sh ]; then
+if [ -e ~/bin/localalias.sh ]; then
    . ~/bin/localalias.sh
 fi
 
@@ -46,7 +48,7 @@ if [ ! -d /var/tmp/$USER/vim-swap ]; then
 fi
 
 
-export    LDFLAGS=-L/usr/local/opt/openssl/lib
-export    CPPFLAGS=-I/usr/local/opt/openssl/include
- export PERL5LIB=$HOME/git/actium/lib:$HOME/git/Perl-Tidy-Sweetened/lib:$HOME/git/List-Flat/lib:$HOME/git/Array-2D-pm/lib:$HOME/git/English-Control/lib:$HOME/git/Array-2D/lib/:$HOME/githook-perltidy/lib:$HOME/ReallyNegative/lib
+export LDFLAGS=-L/usr/local/opt/openssl/lib
+export CPPFLAGS=-I/usr/local/opt/openssl/include
+export PERL5LIB=$HOME/git/actium/lib:$HOME/git/Perl-Tidy-Sweetened/lib:$HOME/git/List-Flat/lib:$HOME/git/Array-2D-pm/lib:$HOME/git/English-Control/lib:$HOME/git/Array-2D/lib/:$HOME/githook-perltidy/lib:$HOME/ReallyNegative/lib
 export BASH_SILENCE_DEPRECATION_WARNING=1
