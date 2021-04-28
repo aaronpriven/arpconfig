@@ -1,4 +1,4 @@
-#!/ActivePerl/bin/perl
+#!/usr/bin/env perl
 #
 # Get number of license plates without three-letter runs
 
