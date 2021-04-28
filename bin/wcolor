@@ -89,14 +89,19 @@ my ( $light, $file, $value, $sat );
 
 if ( $fname eq fc('light') or $fname eq fc('l') ) {
     $light = 1;
-    $sat = .25;
-    $file  = glob('~/.wcolor');
-    $value = .9;
+    $sat   = ( .25 + ( rand(1) * .15 ) - .075 );
+    $file  = glob('~/.wcolor-light');
+    $value = ( .85 + ( rand(1) * .15 ) - .075 );
 }
 else {
-    $file  = glob('~/.wcolor-light');
-    $value = .15;
-    $sat = 1;
+    $file  = glob('~/.wcolor');
+    $value = .15 + rand(1) * .1 - .05;
+    if ( rand(2) > 1 ) {
+        $sat = 1;
+    }
+    else {
+        $sat = 1 - ( rand(1) * .15 );
+    }
 }
 
 my $hue;
@@ -108,13 +113,15 @@ my $hue;
 if ( -e $file ) {
     #$hue = ( read_file($file) + 70 + rand(40) ) % 360;
     # so moves between 70 and 110 degrees...
-    $hue = ( read_file($file) + 75 ) % 360;
+    $hue = ( read_file($file) + 70 ) % 360;
 }
 else {
-    $hue = int( rand(24) ) * 15;
+    $hue = int( rand(36) ) * 10;
 }
 
 write_file( $file, $hue );
+
+#say "$hue\t$sat\t$value";
 
 changecolor_hsv( [ $hue, $sat, $value ] );
 

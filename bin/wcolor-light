@@ -1,27 +1,30 @@
+#!/bin/sh
+wcolor l
+
 #!/usr/bin/osascript
 
-set greylevel to .6 * 32768
-set whitelevel to .8 * 65536
-
-tell application "Terminal"
+#set greylevel to .6 * 32768
+#set whitelevel to .8 * 65536
+#
+#tell application "Terminal"
+#	
+#	set a to whitelevel - random number 17408
+#	set b to whitelevel - random number 13056
 	
-	set a to whitelevel - random number 17408
-	set b to whitelevel - random number 13056
-	
-	set r to random number 6
-	
-	if r = 1 then
-		set background color of front window to {a, b, greylevel}
-	else if r = 2 then
-		set background color of front window to {a, greylevel, b}
-	else if r = 3 then
-		set background color of front window to {greylevel, a, b}
-	else if r = 4 then
-		set background color of front window to {b, greylevel, a}
-	else if r = 5 then
-		set background color of front window to {b, a, greylevel}
-	else
-		set background color of front window to {greylevel, b, a}
-	end if
-	
-end tell
+#	set r to random number 6
+#	
+#	if r = 1 then
+#		set background color of front window to {a, b, greylevel}
+#	else if r = 2 then
+#		set background color of front window to {a, greylevel, b}
+#	else if r = 3 then
+#		set background color of front window to {greylevel, a, b}
+#	else if r = 4 then
+#		set background color of front window to {b, greylevel, a}
+#	else if r = 5 then
+#		set background color of front window to {b, a, greylevel}
+#	else
+#		set background color of front window to {greylevel, b, a}
+#	end if
+#	
+#end tell
