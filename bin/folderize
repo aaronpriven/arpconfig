@@ -1,0 +1,25 @@
+#!/usr/bin/env perl
+#
+# takes arguments of filenames and makes a folder with the longest common
+# substring of those filenames, and moves those files to it
+
+use Actium;
+use String::LCSS;
+
+my @files = map { Actium::file ($_) } @ARGV;
+
+my @filenames = map { $_->basename } @files;
+
+my $substr = List::Util::reduce { String::LCSS::lcss($a, $b ) } @filenames;
+
+$substr =~ s/[.\s]+$//;
+$substr =~ s/^[.\s]+//;
+
+say $substr;
+
+my $folder = Actium::folder($substr);
+
+$folder->mkpath;
+
+$_->move_to($folder) foreach @files;
+
