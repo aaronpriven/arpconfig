@@ -20,8 +20,8 @@ fi
 
 . ~/arpconfig/alias.sh
 
-if [ -e ~/bin/localalias.sh ]; then
-   . ~/bin/localalias.sh
+if [ -e ~/bin/localprofile.sh ]; then
+   . ~/bin/localprofile.sh
 fi
 
 # miscellaneous stuff
