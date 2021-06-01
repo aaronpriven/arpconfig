@@ -1,9 +1,0 @@
-#!/usr/bin/perl
-
-($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-
-$year += 1900;
-$mon += 1;
-$min = sprintf("%.2d" , $min);
-$hour = sprintf("%.2d" , $hour);
-print "meta-creation_date: $mon/$mday/$year $hour:$min\n";
