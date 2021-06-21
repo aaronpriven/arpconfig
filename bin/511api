@@ -1,0 +1,39 @@
+#!/usr/bin/env perl
+
+use 5.010;
+use strict;
+use warnings;
+
+my $apikey = $ENV{'FIVE11_API_KEY'};
+
+use LWP::Simple;
+
+my $display_url_only;
+
+if ( $ARGV[0] eq '-u' ) {
+    $display_url_only = 1;
+    shift @ARGV;
+}
+
+my $args = "@ARGV";
+
+$args .= '?' unless $args =~ /\?/;
+
+die "no arguments" unless $args;
+
+my $url = "http://api.511.org/transit/" . $args . "&api_key=" . $apikey;
+
+if ($display_url_only) {
+    say $url;
+    exit;
+}
+
+my $content = get($url) or die 'Unable to get page';
+
+use Encode qw(decode encode);
+$content = decode( 'UTF-8', $content, Encode::FB_CROAK );
+$content =~ s/^\x{FEFF}//;
+
+open( my $jsontool, '|-', 'python -m json.tool' ) // die "Can't fork: $!";
+
+say $jsontool $content;
