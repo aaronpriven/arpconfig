@@ -1,12 +1,15 @@
 #!/usr/bin/env perl
 
-use 5.010;
+use 5.030;
 use strict;
 use warnings;
 
+our $VERSION = "0.0.0";
+
 my $apikey = $ENV{'FIVE11_API_KEY'};
 
-use LWP::Simple;
+use LWP::UserAgent ();
+use File::Slurper('write_binary');
 
 my $display_url_only;
 
@@ -28,7 +31,22 @@ if ($display_url_only) {
     exit;
 }
 
-my $content = get($url) or die 'Unable to get page';
+my $ua = LWP::UserAgent->new;    # we create a global UserAgent object
+$ua->agent("511api/$VERSION ");
+
+my $response = $ua->get($url);
+die qq{Can't get response} if not $response->is_success;
+my $type = scalar( $response->header('Content-Type') );
+
+say "Content-type: $type";
+
+my $content = $response->decoded_content;
+
+if ( $type =~ m{application/zip} ) {
+    say STDERR "Writing $args.zip";
+    write_binary( "$args.zip", $content );
+    exit;
+}
 
 use Encode qw(decode encode);
 $content = decode( 'UTF-8', $content, Encode::FB_CROAK );
