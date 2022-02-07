@@ -42,18 +42,20 @@ if ( $fname eq fc('colors') or $fname eq fc('c') ) {
 
 if ( $fname eq fc('colors_rgb') ) {
     foreach my $entry (@entries) {
-        my @rgb  = hsv2rgb( @{ $entry->[1] } );
-        my @lrgb = hsv2rgb( $entry->[1][0], $entry->[1][1] * .15, 0.9 );
+        my @rgb   = hsv2rgb( @{ $entry->[1] } );
+        my @lrgb  = hsv2rgb( $entry->[1][0], $entry->[1][1] * .15, 0.9 );
+        my @llrgb = hsv2rgb( $entry->[1][0], $entry->[1][1],       1 );
 
-        foreach ( @rgb, @lrgb ) {
+        foreach ( @rgb, @lrgb, @llrgb ) {
             $_ = floor( $_ * 255 );    # 8 bit RGB values
             $_ = 65535 if $_ > 255;
             $_ = 0     if $_ < 0;
         }
 
         print $entry->[0];
-        print "\t", join( "/", @rgb ), "\t", sprintf( "#%02x%02x%02x", @rgb );
-        say "\t", join( "/", @lrgb ), "\t", sprintf( "#%02x%02x%02x", @lrgb );
+        print "\t", join( "/", @rgb ),  "\t", sprintf( "#%02x%02x%02x", @rgb );
+        print "\t", join( "/", @lrgb ), "\t", sprintf( "#%02x%02x%02x", @lrgb );
+        say "\t", join( "/", @llrgb ), "\t", sprintf( "#%02x%02x%02x", @llrgb );
     }
     exit;
 }
