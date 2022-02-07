@@ -1,0 +1,21 @@
+#!/usr/bin/env perl
+
+use 5.030;
+
+use POSIX ();
+
+foreach my $entry (@ARGV) {
+    my ( $line, $quantity );
+    if ( $entry =~ /:/ ) {
+        ( $line, $quantity ) = split( /:/, $entry );
+    }
+    else {
+        $line = '';
+        $quantity = $entry;
+    }
+
+    my $total = POSIX::ceil(2.1 * $quantity);
+
+    say "$line\t$quantity\t$total";
+
+}

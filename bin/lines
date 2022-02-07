@@ -1,0 +1,21 @@
+#!/usr/bin/env perl
+
+use 5.030;
+use List::Util('uniq');
+use Actium;
+
+my $signup = shift;
+die "Must specify signup" unless $signup;
+
+my $dir = $ENV{HOME} . "/si/$signup/slists/line/";
+
+my @files = glob($dir . '*');
+
+s#.*/## foreach @files;
+s#-.*## foreach @files;
+@files = Actium::sortbyline @files;
+@files = uniq @files;
+
+my $lines = "@files";
+$lines = Actium::u_wrap($lines, min_columns => 1, max_columns => 72);
+say $lines;
