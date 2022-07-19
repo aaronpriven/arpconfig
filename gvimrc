@@ -188,7 +188,7 @@ com! Portrait set lines=130
 com! Square set columns=158 lines=76
 com! HeadwaySize set lines=49 columns=211 | Small 
 com! DblHeadwaySize set lines=95 columns=211 | Small
-com! StartSize set lines=40 columns=87 
+com! StartSize set lines=35 columns=87 
 
 StartSize
 

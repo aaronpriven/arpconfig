@@ -1,3 +1,3 @@
 #!/usr/bin/env perl
 
-print join("\n" , @INC);
+print join("\n" , @INC) , "\n";

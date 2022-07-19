@@ -37,6 +37,8 @@ export BLOCKSIZE=1024
 export EDITOR=/usr/bin/vi
 export VR=~/Applications/MacVim.app/Contents/Reeources/vim/runtime
 
+export ZIPOPT="-b /tmp/"
+
 if [ ! -d /var/tmp/$USER ]; then
   mkdir /var/tmp/$USER
 fi

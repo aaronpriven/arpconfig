@@ -52,6 +52,6 @@ use Encode qw(decode encode);
 $content = decode( 'UTF-8', $content, Encode::FB_CROAK );
 $content =~ s/^\x{FEFF}//;
 
-open( my $jsontool, '|-', 'python -m json.tool' ) // die "Can't fork: $!";
+open( my $jsontool, '|-', 'python3 -m json.tool' ) // die "Can't fork: $!";
 
 say $jsontool $content;
