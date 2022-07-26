@@ -1,0 +1,24 @@
+# This is Git's per-user configuration file.
+[core]
+# Please adapt and uncomment the following lines:
+	user = Aaron Priven
+	email = aaron@priven.com
+	editor = mvim  -f -g
+	autocrlf = input
+	excludesfile = ~/.gitignore_global
+[user]
+	name = Aaron Priven
+	email = aaron@priven.com
+[push]
+	default = simple
+[alias]
+	st = status
+            z = cherry-pick
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
+[commit]
+	verbose = true
+[pretty]
+            arp = %C(auto,green)%h  %C(auto,cyan)%ad  %C(auto,bold yellow)%s

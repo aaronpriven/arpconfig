@@ -1,0 +1,13 @@
+#!/usr/bin/env perl
+
+use 5.030;
+
+use File::Find;
+
+find (\&wanted, '.');
+
+sub wanted {
+    next unless -d $_;
+    say $File::Find::name ;
+
+}

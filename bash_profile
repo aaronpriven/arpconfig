@@ -20,8 +20,8 @@ fi
 
 . ~/arpconfig/alias.sh
 
-if [ -e ~/bin/localalias.sh ]; then
-   . ~/bin/localalias.sh
+if [ -e ~/bin/localprofile.sh ]; then
+   . ~/bin/localprofile.sh
 fi
 
 # miscellaneous stuff
@@ -36,6 +36,8 @@ export FTP_PASSIVE=1
 export BLOCKSIZE=1024
 export EDITOR=/usr/bin/vi
 export VR=~/Applications/MacVim.app/Contents/Reeources/vim/runtime
+
+export ZIPOPT="-b /tmp/"
 
 if [ ! -d /var/tmp/$USER ]; then
   mkdir /var/tmp/$USER

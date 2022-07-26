@@ -12,6 +12,10 @@ foreach (@ARGV) {
       $sep = ' ';
       next;
    }
+   if ( $_ eq '-c' ) {
+      $sep = ',';
+      next;
+   }
    if ( $_ =~ /\A\d+\z/) {
       push @fields , $_;
    }

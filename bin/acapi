@@ -21,17 +21,21 @@ $args .= '?' unless $args =~ /\?/;
 
 die "no arguments" unless $args;
 
+my $token = "token=";
+$token = '&' . $token unless $args=~ /\?\z/;
+
 my $url
-  = "http://api.actransit.org/transit/"
+  = "https://api.actransit.org/transit/"
   . $args
-  . "&token=" . $apikey;
+  . $token . $apikey;
 
 if ($display_url_only) {
     say $url;
     exit;
 }
 
-my $content = get($url) or die 'Unable to get page';
+#my $content = get($url) or die 'Unable to get page';
+my $content = `curl $url`;
 
 open( my $jsontool, '|-', 'python -m json.tool' ) // die "Can't fork: $!";
 
