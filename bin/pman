@@ -7,5 +7,5 @@ fi
 if [ ! $mpg ];then
 	exit;
 fi
-man -t $mpg | open -f -a /Applications/Preview.app;
+man -t $mpg | open -f -a Preview
 exit;
