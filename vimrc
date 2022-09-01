@@ -114,7 +114,9 @@ let vim_markdown_preview_hotkey='<F12>'
 
 "define :Tidy command to run perltidy on visual selection || entire buffer"
 "command -range=% -nargs=* Tidy <line1>,<line2>!perltidier
-command -range=% -nargs=* Tidy <line1>,<line2>!perl ~/git/Perl-Tidy-Sweetened/script/perltidier
+"command -range=% -nargs=* Tidy <line1>,<line2>!perl ~/git/Perl-Tidy-Sweetened/script/perltidier
+
+command -range=% -nargs=* Tidy <line1>,<line2>!perltidy
 
 "run :Tidy on entire buffer and return cursor to (approximate) original position"
 fun DoTidy()
