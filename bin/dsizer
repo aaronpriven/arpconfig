@@ -1,0 +1,41 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use 5.024;
+use feature      ('refaliasing');
+use experimental ('refaliasing');
+
+use Image::Info qw(image_info dim);
+use Path::Class;
+use File::Copy;
+
+my $dir = dir( $ARGV[0] ) || die "no directory specified to $0";
+
+my $getsize_cr = sub {
+    my $file = shift;
+    return if $file->is_dir;
+    my ($info) = image_info("$file");
+    if ( $info->{error} ) {
+        say "$file: error";
+        return;
+    }
+    my ( $i_wid, $i_ht ) = dim($info);
+    #say "$file:\n    ${i_wid}x$i_ht";
+    
+    my $chosen = sprintf ("%05u_%05u", $i_wid , $i_ht );
+
+    $chosen = "wallpaper-$chosen";
+
+    my $basename = $file->basename;
+    mkdir $chosen unless -d $chosen;
+    unless ( -e "$chosen/$basename" ) {
+        move "$file", "$chosen/$basename";
+    }
+
+};
+
+$dir->recurse( callback => $getsize_cr );
+
+__END__
+
