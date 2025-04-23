@@ -20,9 +20,6 @@ fi
 
 . ~/arpconfig/alias.sh
 
-if [ -e ~/bin/localprofile.sh ]; then
-   . ~/bin/localprofile.sh
-fi
 
 # miscellaneous stuff
 
@@ -49,8 +46,12 @@ if [ ! -d /var/tmp/$USER/vim-swap ]; then
   mkdir /var/tmp/$USER/vim-swap
 fi
 
-
 export LDFLAGS=-L/usr/local/opt/openssl/lib
 export CPPFLAGS=-I/usr/local/opt/openssl/include
 export PERL5LIB=$HOME/git/actium/lib:$HOME/git/Perl-Tidy-Sweetened/lib:$HOME/git/List-Flat/lib:$HOME/git/Array-2D-pm/lib:$HOME/git/English-Control/lib:$HOME/git/Array-2D/lib/:$HOME/githook-perltidy/lib:$HOME/ReallyNegative/lib
 export BASH_SILENCE_DEPRECATION_WARNING=1
+
+
+if [ -e ~/bin/localprofile.sh ]; then
+   . ~/bin/localprofile.sh
+fi
