@@ -43,8 +43,9 @@ say "Content-type: $type";
 my $content = $response->decoded_content;
 
 if ( $type =~ m{application/zip} ) {
-    say STDERR "Writing $args.zip";
-    write_binary( "$args.zip", $content );
+    my $fname = $args =~ s/\?/ /gr;
+    say STDERR "Writing $fname.zip";
+    write_binary( "$fname.zip", $content );
     exit;
 }
 
@@ -52,6 +53,7 @@ use Encode qw(decode encode);
 $content = decode( 'UTF-8', $content, Encode::FB_CROAK );
 $content =~ s/^\x{FEFF}//;
 
-open( my $jsontool, '|-', 'python3 -m json.tool' ) // die "Can't fork: $!";
+#open( my $jsontool, '|-', 'python3 -m json.tool' ) // die "Can't fork: $!";
 
-say $jsontool $content;
+say $content;
+#say $jsontool $content;
