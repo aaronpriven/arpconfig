@@ -21,7 +21,7 @@ my $getsize_cr = sub {
         return;
     }
     my ( $i_wid, $i_ht ) = dim($info);
-    #say "$file:\n    ${i_wid}x$i_ht";
+    say "$file:\n    ${i_wid}x$i_ht";
     
     my $chosen = sprintf ("%05u_%05u", $i_wid , $i_ht );
 
