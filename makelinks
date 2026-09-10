@@ -14,10 +14,10 @@ ln -s "/Users/$USER/arpconfig" sh
 ln -s "/Users/$USER/Library/Mobile Documents/com~apple~CloudDocs" i
 
 ln -s "/Users/$USER/Creative Cloud Files" c
-ln -s "/Users/$USER/Creative Cloud Files/TIDs" t
+#ln -s "/Users/$USER/Creative Cloud Files/TIDs" t
 
-ln -s "/Users/$USER/Alameda - Contra Costa Transit/PubInfSys - Documents/Actium" a
-ln -s "/Users/$USER/OneDrive - Alameda - Contra Costa Transit/Documents" d
-ln -s "/Users/$USER/OneDrive - Alameda - Contra Costa Transit/git" git
-ln -s "/Users/$USER/Alameda - Contra Costa Transit/PubInfSys - Documents" p 
-ln -s "/Users/$USER/Alameda - Contra Costa Transit/PubInfSys - Documents/Actium/signups" si
+#ln -s "/Users/$USER/Alameda - Contra Costa Transit/PubInfSys - Documents/Actium" a
+#ln -s "/Users/$USER/OneDrive - Alameda - Contra Costa Transit/Documents" d
+#ln -s "/Users/$USER/OneDrive - Alameda - Contra Costa Transit/git" git
+#ln -s "/Users/$USER/Alameda - Contra Costa Transit/PubInfSys - Documents" p 
+#ln -s "/Users/$USER/Alameda - Contra Costa Transit/PubInfSys - Documents/Actium/signups" si
