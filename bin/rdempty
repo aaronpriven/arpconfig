@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# Default to current directory if no argument is provided
+TARGET_DIR="${1:-.}"
+
+echo "Scanning: $(realpath "$TARGET_DIR")"
+
+# -depth: process a directory's contents before the directory itself
+# -type d: look for directories only
+find "$TARGET_DIR" -depth -type d | while read -r dir; do
+    # Skip the root target directory itself
+    if [ "$dir" == "$TARGET_DIR" ]; then
+        continue
+    fi
+
+    # Check if directory exists (it might have been deleted by a parent)
+    if [ ! -d "$dir" ]; then
+        continue
+    fi
+
+    # Count files including hidden ones, but excluding . and ..
+    # We use 'ls -A' and pipe to 'wc -l'
+    file_count=$(ls -A "$dir" | wc -l | xargs)
+    
+    # If it's empty
+    if [ "$file_count" -eq 0 ]; then
+        rmdir "$dir" && echo "Removed empty: $dir"
+    
+    # If it contains exactly one file and that file is .DS_Store
+    elif [ "$file_count" -eq 1 ] && [ -f "$dir/.DS_Store" ]; then
+        rm -rf "$dir" && echo "Removed (only .DS_Store): $dir"
+    fi
+done
+
+echo "Done."

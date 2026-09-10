@@ -1,0 +1,74 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use 5.024;
+use feature      ('refaliasing');
+use experimental ('refaliasing');
+
+use Image::Info qw(image_info dim);
+use Path::Class;
+use File::Copy;
+
+my @desc_of_dim = (qw/width height/);
+
+my $dir = dir( shift @ARGV ) || die "no directory specified to $0";
+
+my ( $width, $height ) = @ARGV[ 0, 1 ];
+
+die "Invalid height [$height]"
+  unless defined $height
+  and $height =~ /^[0-9]+$/
+  and $height > 0;
+
+die "Invalid width [$width]"
+  unless defined $width
+  and $width =~ /^[0-9]+$/
+  and $width > 0;
+
+my $chosen = "copies-$width-$height";
+say "Copying to $chosen";
+mkdir $chosen unless -d $chosen;
+
+my $getsize_cr = sub {
+    my $file = shift;
+    next if $file =~ /.DS_Store/;
+    return if $file->is_dir;
+    my ($info) = image_info("$file");
+    if ( $info->{error} ) {
+        say "$file: error";
+        return;
+    }
+    my ( $i_wid, $i_ht ) = dim($info);
+
+    print "$file $i_wid $i_ht ";
+
+    if ( $i_wid < $width and $i_ht < $height ) {
+        say "Both width and height too small";
+        return;
+    }
+
+    if ( $i_wid < $width ) {
+        say "Width too small";
+        return;
+    }
+
+    if ( $i_ht < $height ) {
+        say "Height too small";
+        return;
+    }
+
+    my $basename = $file->basename;
+
+    if ( -e "$chosen/$basename" ) {
+        say "$chosen/$basename already exists";
+    }
+    else {
+        copy "$file", "$chosen/$basename";
+        say "copied to $chosen";
+    }
+
+};
+
+$dir->recurse( callback => $getsize_cr );
+

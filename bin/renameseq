@@ -1,0 +1,62 @@
+#!/usr/bin/perl
+#
+# Usage: rename perlexpr [files]
+
+# originally swiped from http://evolt.org/renaming_files_with_perl
+
+use 5.032;
+
+my $dashn;
+
+if ( $ARGV[0] eq '-n' ) {
+    shift @ARGV;
+    $dashn = 1;
+    print "(displaying only, not renaming)\n";
+}
+
+if ( !@ARGV ) {
+    @ARGV = <STDIN>;
+    chomp(@ARGV);
+}
+
+use File::Slurp::Tiny(qw/read_file write_file/);
+
+my $file = glob('~/.renameseq');
+my $num;
+
+if ( -e $file ) {
+    $num = ( read_file($file) );
+    chomp $num;
+}
+else {
+    $num = 0;
+}
+
+say "Starting with $num";
+
+foreach $_ (@ARGV) {
+    my $name_num = sprintf( '%04u', $num );
+    my $old_name = $_;
+
+   my @components = split(/\./, $old_name);
+   my $ext = $components[-1];
+
+
+    $_        = 'IMG_' . $name_num . '.' . $ext;
+    next if $old_name eq $_;
+    if ( -e $_ ) {    # not in original evolt version
+        warn "can't rename $old_name: $_ already exists\n";
+        next;
+    }
+
+    print "$old_name => $_\n";
+    $num++;
+
+    next if $dashn;
+    rename( $old_name, $_ ) or die $!;
+}
+
+if ( not $dashn ) {
+    write_file( $file, $num );
+}
+

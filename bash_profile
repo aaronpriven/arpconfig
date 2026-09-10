@@ -10,7 +10,7 @@ unset promptoff
 
 # path
 
-PATH=/opt/homebrew/bin:$PATH:~/bin:~/arpconfig/bin:~/homebrew/bin/:~/git/actium/bin:~/Applications/MacVim.app/Contents/bin:/Applications/MacVim.app/Contents/bin/
+PATH=/opt/homebrew/bin:$PATH:~/bin:~/arpconfig/bin:~/homebrew/bin/:~/git/actium/bin:~/Applications/MacVim.app/Contents/bin:/Applications/MacVim.app/Contents/bin/:/opt/homebrew/Cellar/perl/5.34.0/bin
 
 if [ -e ~/perl5/perlbrew/etc/bashrc ]; then
     source ~/perl5/perlbrew/etc/bashrc

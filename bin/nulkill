@@ -1,0 +1,47 @@
+#!/usr/bin/env perl
+
+use 5.032;
+
+use File::Find;
+use File::Slurper;
+use Try::Tiny (qw/try catch/);
+
+our $arg = shift @ARGV;
+
+$arg = lc($arg);
+
+our $testmode = 1 unless $arg eq "killem";
+
+find( { wanted => \&wanted, no_chdir => 1 }, '.' );
+
+sub wanted {
+
+    my $file = $_;
+
+    return if -l $file;
+
+    if ( -d $file ) {
+
+        my $count = $file =~ tr[/][];
+        return unless $count < 2;
+        say ">> $file";
+        return;
+    }
+    return if -z $file;
+
+    my $filetext;
+    try {
+        $filetext = File::Slurper::read_binary($file);
+    }
+    catch {
+        warn "caught error: $_ on $file";
+    };
+
+    if ( $filetext =~ m/[^\0]/ ) {
+        return;
+    }
+
+    say $file ;
+    unlink $file unless $testmode;
+
+}

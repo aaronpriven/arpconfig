@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+
+use 5.032;
+
+use Scalar::Util('looks_like_number');
+
+my $in = shift @ARGV;
+
+die "Invalid input" unless looks_like_number($in) and $in >= 2;
+
+say int(rand($in))+1;

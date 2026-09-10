@@ -1,0 +1,127 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use 5.032;
+
+use Getopt::Long 'GetOptions';
+use autouse 'Pod::Usage' => 'pod2usage';
+
+GetOptions(
+    nop     => \my ($nop),
+    verbose => \my ($verbose),
+    help    => sub { pod2usage( -verbose => 1 ) },
+    man     => sub { pod2usage( -verbose => 2 ) }
+) or die pod2usage( -verbose => 0 );
+@ARGV == 2 or pod2usage( -verbose => 0 );
+my ( $src, $tgt ) = @ARGV;
+-d $tgt and -d $src or pod2usage( -verbose => 0 );
+
+=head1 NAME
+
+merge-move - Moves the contents of one directory into another by merging files.
+
+=head1 SYNOPSIS
+
+ merge-move /home/data/blah /home/data/somewhere-else
+
+ Options:
+   --nop
+   --verbose
+
+=head1 OPTIONS
+
+=over
+
+=item --nop
+
+Don't do any eral work.
+
+=item -verbose
+
+Show what's happening.
+
+=back
+
+=cut
+
+use autouse 'Cwd'        => 'cwd';
+use autouse 'File::Find' => qw/find finddepth/;
+use autouse 'File::Spec::Functions' =>
+  qw( canonpath catfile splitpath catdir splitdir );
+use autouse 'File::Path' => 'mkpath';
+use autouse 'File::Copy' => 'move';
+$SIG{CHLD} = 'IGNORE';
+
+my $pwd    = cwd();
+my $pwd_rx = qr/\A\Q$pwd/;
+
+my (%dirs);
+finddepth(
+    {   wanted => sub {
+            if ( -d $_ ) {
+                if ( is_folder_empty($_) ) {
+                    if ($verbose) {
+                        print "rmdir $_\n";
+                    }
+
+                    if ( not $nop ) {
+                        rmdir $_ or die "$_ : $!";
+                    }
+                }
+                return;
+            }
+            return if not -f $_;
+
+            my $srcfile;
+            {
+                no warnings 'once';
+                $srcfile = canonpath($File::Find::name);
+            }
+            my ( undef, $srcdir, $file ) = splitpath($srcfile);
+
+            my @components = splitdir($srcdir);
+            shift @components;
+            #	say "[" , join("|" , @components ) , "]";
+
+            my $tgtdir = catdir( $tgt, @components );
+
+            if (    !exists $dirs{$tgtdir}
+                and !-d $tgtdir )
+            {
+                $dirs{$tgtdir} = undef;
+                if ($verbose) {
+                    print "mkdir $tgtdir\n";
+                }
+                if ( not $nop ) {
+                    mkpath $tgtdir, 0, 0775
+                      or die "Can't create $tgtdir: $!";
+                }
+            }
+
+            my $tgtfile = catfile( $tgtdir, $file );
+
+            if ( -e $tgtfile ) {
+                if ($verbose) {
+                    print "Couldn't move $srcfile: $tgtfile already exists. \n";
+                }
+                return;
+            }
+            if ($verbose) {
+                print "mv $srcfile $tgtfile\n";
+            }
+            if ( not $nop ) {
+                move $srcfile, $tgtfile
+                  or die "Couldn't move $srcfile to $tgtfile: $!";
+            }
+        },
+        no_chdir => 1
+    },
+    $src
+);
+
+sub is_folder_empty {
+    my $dirname = shift;
+    opendir( my $dh, $dirname ) or die "Not a directory";
+    return scalar( grep { $_ ne "." && $_ ne ".." } readdir($dh) ) == 0;
+}
