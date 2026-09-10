@@ -17,7 +17,7 @@ unless ( (-e $cachefil ) and (stat($cachefil))[9] >= (stat($manpage))[9]) {
    print "Making $cachefil...\n";
 
    system "/bin/mkdir -p " . dirname($cachefil);
-   system "/usr/bin/groff -mandoc -T html $manpage > $cachefil";
+   system "/usr/bin/groff -mandoc -f N -T html $manpage > $cachefil";
    system "/usr/bin/touch -r $manpage $cachefil";
 }
 
