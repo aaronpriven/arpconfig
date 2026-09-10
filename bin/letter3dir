@@ -1,0 +1,47 @@
+#!/usr/bin/env perl
+
+use 5.034;
+use feature ('signatures');
+no experimental 'signatures';
+
+use File::Find ();
+
+my ( $from, $to ) = @ARGV;
+
+die "Usage: $0 fromdir todir\n"
+  unless ( $from or $from eq '0' )
+  and ( $to or $to eq '0' );
+
+$from =~ s#/$##;
+$to   =~ s#/$##;
+
+mkdir $to or die "$!: mkdir $to"
+  unless -d $to;
+
+File::Find::find( { wanted => \&wanted, no_chdir => 1 }, $from );
+
+use vars qw/*path *dir *prune/;
+
+sub wanted {
+    my ( $volume, $parentdir, $name ) = File::Spec->splitpath($_);
+    next if $name eq '.DS_Store';
+    my $newto = "$to/" . substr( $name, 0, 3 );
+
+    mkdir $newto or die "$!: mkdir $newto"
+      unless -d $newto;
+
+    lstat($_);
+    return unless -e _;
+    return if -d _;
+
+    my $i = 0;
+
+    do {
+        $i++;
+        mkdir "$newto/$i" unless -d "$newto/$i";
+    } until ( !-e "$newto/$i/$name" );
+
+    say qq{ rename $_ , "$newto/$i/$name" };
+    rename $_, "$newto/$i/$name";
+
+}
