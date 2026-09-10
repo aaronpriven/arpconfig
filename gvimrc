@@ -23,14 +23,22 @@ function! AaronFont ()
    highlight Comment gui=italic
 endfunction
 
-com! SCELight     let g:aaron_font = 'Source Code Pro ExtraLight' | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
-com! SCLight      let g:aaron_font = 'Source Code Pro Light'      | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
-com! SCReg        let g:aaron_font = 'Source Code Pro'            | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
-com! Lucida       let g:aaron_font = 'Lucida Console'             | let g:aaron_anti = 0 | let g:aaron_linespace = 1 | call AaronFont()
-com! Monaco       let g:aaron_font = 'Monaco'                     | let g:aaron_anti = 0 | let g:aaron_linespace = 1 | call AaronFont()
-com! Fira         let g:aaron_font = 'Fira Code Light'            | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
-com! Fantasque    let g:aaron_font = 'Fantasque Sans Mono'        | let g:aaron_anti = 1 | let g:aaron_linespace = 1 | call AaronFont()
-com! LatinModern  let g:aaron_font = 'LMMono10-Regular'           | let g:aaron_anti = 1 | let g:aaron_linespace = 1 | call AaronFont()
+com! SCELight     let g:aaron_font = 'Source Code Pro ExtraLight'   | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
+com! SCLight      let g:aaron_font = 'Source Code Pro Light'        | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
+com! SCReg        let g:aaron_font = 'Source Code Pro'              | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
+com! Lucida       let g:aaron_font = 'Lucida Console'               | let g:aaron_anti = 0 | let g:aaron_linespace = 1 | call AaronFont()
+com! Monaco       let g:aaron_font = 'Monaco'                       | let g:aaron_anti = 0 | let g:aaron_linespace = 0 | call AaronFont()
+com! Fira         let g:aaron_font = 'Fira Code Light'              | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
+com! Fantasque    let g:aaron_font = 'Fantasque Sans Mono'          | let g:aaron_anti = 1 | let g:aaron_linespace = 1 | call AaronFont()
+com! LatinModern  let g:aaron_font = 'LMMono10-Regular'             | let g:aaron_anti = 1 | let g:aaron_linespace = 1 | call AaronFont()
+com! MArgon       let g:aaron_font = 'MonaspaceArgon-ExtraLight'    | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
+com! MKrypton     let g:aaron_font = 'MonaspaceKrypton-ExtraLight'  | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
+com! MNeon        let g:aaron_font = 'MonaspaceNeon-ExtraLight'     | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
+com! MXenon       let g:aaron_font = 'MonaspaceXenon-ExtraLight'    | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
+com! MRadon       let g:aaron_font = 'MonaspaceRadon-ExtraLight'    | let g:aaron_anti = 1 | let g:aaron_linespace = 0 | call AaronFont()
+
+" Argon = Humanist, Neon = Neogrotesque, Xenon = slab serif, 
+" Radon = " handwriting, Krypton = Mechanical Sans
 
 function! Big ()
    let g:aaron_fontsize = "16"
