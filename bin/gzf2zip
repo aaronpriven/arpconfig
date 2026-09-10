@@ -1,0 +1,65 @@
+#!/usr/bin/env perl
+
+use 5.032;
+
+use Path::Class;
+use List::Util(qw/all none any/);
+use experimental 'refaliasing', 'signatures';
+use feature 'signatures';
+
+my $basedir = dir( shift @ARGV ) || die "no directory specified to $0";
+
+my @alldirs;
+
+my $compress_cr = sub {
+
+    my $dir = shift;
+    return unless $dir->is_dir;
+
+    my @children = grep { $_ ne '.DS_Store' } $dir->children;
+    my @gzs      = grep { $_ =~ /\.eps\.gz$/ and not $_->is_dir } @children;
+
+    return unless @gzs > 4;
+    # arbitrarily chosen limit: don't bother with only that many gz files
+
+    my ( $zipfile, $command );
+    my $basename = $dir->basename;
+    my $parent   = $dir->parent;
+
+    if ( @gzs != @children ) {
+        # if it's not a full directory of gzip files
+
+        return;    # to be done later
+
+    }
+    else {
+
+        push @alldirs, [ $dir, @gzs ];
+
+    }
+
+};
+
+$basedir->recurse( depthfirst => 1, callback => $compress_cr );
+
+foreach my $ref (@alldirs) {
+    my ( $dir, @gzs ) = @$ref;
+    my $basename = $dir->basename;
+    my $parent   = $dir->parent;
+    my $zipfile  = $basename . ".zip";
+
+    say $dir;
+
+    foreach my $gz (@gzs) {
+        say $gz;
+        mysys(qq{/usr/bin/gunzip "$gz"});
+    }
+
+    mysys(qq{cd "$parent";/usr/bin/zip -rm "$zipfile" "$basename/"});
+
+}
+
+sub mysys ($cmd) {
+    ( system $cmd) == 0 or die qq{system '$cmd' failed: $?"};
+}
+

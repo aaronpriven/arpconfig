@@ -1,0 +1,41 @@
+#!/usr/bin/env perl
+
+use 5.034;
+use feature ('signatures');
+no experimental 'signatures';
+
+use File::Find ();
+
+my ( $re, $from, $to ) = @ARGV;
+
+$to =~ s#/$##;
+$from =~ s#/$##;
+
+die "Usage: $0 regex fromdir todir\n "
+  unless ( $from or $from eq '0' )
+  and ( $to or $to eq '0' );
+
+mkdir $to or die "$!: mkdir $to"
+  unless -d $to;
+
+File::Find::find( { wanted => \&wanted, no_chdir => 1 }, $from );
+
+sub wanted {
+    my ( $volume, $parentdir, $name ) = File::Spec->splitpath($_);
+    return unless $name =~ qr/$re/i;
+
+    lstat($_);
+    return unless -e _;
+    return if -d _;
+
+    my $i = 0;
+
+    do {
+        $i++;
+        mkdir "$to/$i" unless -d "$to/$i";
+    } until ( !-e "$to/$i/$name" );
+
+    say qq{ rename $_ , "$to/$i/$name" };
+    rename $_, "$to/$i/$name";
+
+}

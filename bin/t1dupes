@@ -1,0 +1,223 @@
+#!/usr/bin/env perl
+#
+use 5.034;
+use experimental ('signatures');
+use File::Spec;
+
+use strict;
+use Digest::xxHash;
+use File::Find ();
+use DDP;
+
+my $dashn;
+my $pwd = shift @ARGV;
+if ( $pwd eq '-n' ) {
+    $dashn = 1;
+    $pwd   = shift @ARGV;
+}
+
+die "Usage: $0 [-n] dirtosearch\n" unless $pwd;
+
+use File::stat;
+
+# for the convenience of &wanted calls, including -eval statements:
+#use vars qw/*path *dir *prune/;
+#*path  = *File::Find::name;
+#*dir   = *File::Find::dir;
+#*prune = *File::Find::prune;
+
+my ( %paths_of_name, %hash_of_path );
+
+File::Find::find( { wanted => \&wanted, no_chdir => 1 }, $pwd );
+
+foreach my $name (sort keys %paths_of_name) {
+
+   my @paths = $paths_of_name{$name}->@*;
+   next if @paths == 1;
+   say "$name: " , join (" | " , @paths);
+
+}
+
+
+sub wanted {
+    my ( $volume, $parentdir, $name ) = File::Spec->splitpath($_);
+    return if $name eq '.DS_Store';
+    my $rsrc = "$_/..namedfork/rsrc";
+
+    lstat($_);
+    return unless -f _ ;
+    return unless -e $rsrc;
+
+    my $type = `/usr/bin/GetFileInfo -t "$_"`;
+    chomp $type;
+
+    return unless $type eq q{"LWFN"};
+
+    if ( not exists $paths_of_name{$name} ) {
+        say "Initial $_";
+        $paths_of_name{$name} = [$_];
+    }
+    else {
+        say "Duplicate $_";
+
+        push $paths_of_name{$name}->@*, $_;
+    }
+
+}
+
+
+
+__END__
+
+
+    say "Considering $_";
+
+    return;
+    say qq{t1unmac -a -r "$rsrc"};
+
+    my $pfa     = `t1unmac -a -r "$rsrc" `;
+    my $pfahash = gethash($pfa);
+
+    my @candidate_paths = $paths_of_name{$name}->@*;
+    my @candidates_to_save;
+
+  CANDIDATE:
+    for my $candidate_path ( $paths_of_name{$name}->@* ) {
+        say "Candidate: $candidate_path";
+        my $candidate_rsrc = "$candidate_path/..namedfork/rsrc";
+
+        my $has_hash = exists $hash_of_path{$candidate_path};
+        next CANDIDATE
+          if $has_hash and $hash_of_path{$candidate_path} ne $pfahash;
+
+        my $candidate_pfa = `t1unmac -a -r "$candidate_rsrc" `;
+        $hash_of_path{$candidate_path} = gethash($candidate_pfa)
+          unless $has_hash;
+
+        if ( $candidate_pfa eq $pfa ) {
+            say "Duplicates: $_ and $candidate_path";
+            return;
+        }
+        else {
+            say "Not duplicates: $_ and $candidate_path";
+            $hash_of_path{$_} = $pfahash;
+            push @candidates_to_save, $_;
+        }
+
+    }
+
+    push $paths_of_name{$name}->@*, @candidates_to_save;
+
+}
+
+sub gethash ($data) {
+    my $truncated = substr( $data, 0, 8192 );
+    my $hash      = Digest::xxHash::xxhash64_hex( $truncated, 0 );
+    return $hash;
+}
+
+__END__
+
+$of_path{$path} = \%struct;
+
+if ( exists $paths_of_size{$bothsize} ) {
+    #say $path;
+    #p $paths_of_size{$bothsize};
+    my $hash = gethash($path);
+
+        my @candidate_paths = $paths_of_size{$bothsize}->@*;
+
+      CANDIDATE:
+        for my $i ( 0 .. $#candidate_paths ) {
+            my $candidate_path = $candidate_paths[$i];
+            if ( gethash($candidate_path) eq $hash ) {
+                #say pathprint($path), ' matches hashes with ', $candidate_path;
+                my $deleted = compare_files( $path, $candidate_path );
+                next CANDIDATE unless $deleted;
+                my $keeppath;
+                if ( $deleted eq $candidate_path ) {
+                    $paths_of_size{$bothsize}[$i] = $path;
+                    $keeppath = $path;
+                }
+                else { $keeppath = $candidate_path }
+                if ($dashn) {
+                    say "Would keep ", pathprint($keeppath),
+                      ' and would delete ',
+                      pathprint($deleted), " (sizes: $bothsize)";
+                }
+                else {
+                    unlink $deleted;
+                    say "Keeping ", pathprint($keeppath), ' and deleting ',
+                      pathprint($deleted), " (sizes: $bothsize)";
+                }
+                return;
+            }
+        }
+    }
+
+    push $paths_of_size{$bothsize}->@*, $path;
+
+sub gethash {
+    my $path = shift;
+
+    state %cache;
+    return $cache{$path} if exists $cache{$path};
+
+    my $size = -s $path;
+    my ( $data, $hash );
+
+    if ($size) {
+        $size = 8192 if $size > 8192;
+        open my $in, '<', $path or die $!;
+        read $in, $data, $size, 0;
+        close $in;
+        $hash = Digest::xxHash::xxhash64_hex( $data, 0 );
+    }
+    else { $hash = "" }
+
+    $path = "$path/..namedfork/rsrc";
+    if ( -e $path ) {
+        $size = -s $path;
+        $size = 8192 if $size > 8192;
+        open my $in, '<', $path or die $!;
+        read $in, $data, $size, 0;
+        $hash .= "-" . Digest::xxHash::xxhash64_hex( $data, 0 );
+    }
+
+    return $cache{$path} = $hash;
+
+}
+
+sub compare_files {
+    my ( $path1, $path2 ) = @_;
+
+    return if ( $of_path{$path1}{datasize} and compare( $path1, $path2 ) != 0 );
+    # data forks identical
+
+    if ( $of_path{$path1}{rsrcsize} > 0 ) {
+        return if compare( $path1, $path2 ) != 0;
+        # resource forks identical
+    }
+
+    my $name1 = $of_path{$path1}{name};
+    my $name2 = $of_path{$path2}{name};
+
+    # file returned is the one to delete, not keep!
+
+    return $path1 if ( $name1 =~ /^TT[0-9].*\.ttf/i );
+    return $path2 if ( $name2 =~ /^TT[0-9].*\.ttf/i );
+
+    return $path1 if ( $name1 =~ /___/ );
+    return $path2 if ( $name2 =~ /___/ );
+
+    return $path2 if $name1 eq "$name2 Truetype" or $name1 eq "$name2.scr";
+    return $path1 if $name2 eq "$name1 Truetype" or $name2 eq "$name1.scr";
+
+    return $name1 ge $name2 ? $path1 : $path2;
+
+}
+
+sub pathprint {
+    my $path = shift;
+    return $path =~ s/\r/\^M/r;
+}

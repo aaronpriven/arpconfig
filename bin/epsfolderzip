@@ -1,0 +1,85 @@
+#!/usr/bin/env perl
+
+use 5.032;
+
+use Path::Class;
+use List::Util(qw/all none any/);
+
+#my $stareps = "*.eps *.EPS *.Eps *.ePs *.epS *.EPs *.EpS *.ePS";
+my $stareps = "*.eps *.EPS *.Eps *.ePs *.epS *.EPs *.EpS *.ePS";
+
+my $basedir = dir( shift @ARGV ) || die "no directory specified to $0";
+
+my @commands;
+
+my $compress_cr = sub {
+
+    my $dir = shift;
+    return unless $dir->is_dir;
+    my @children = $dir->children;
+
+    @children = grep { $_ ne '.DS_Store' } @children;
+
+    return unless @children;
+
+    my ( $zipfile, $command );
+    my $basename = $dir->basename;
+    my $parent   = $dir->parent;
+
+    if ( all { not $_->is_dir and ( $_ =~ /\.eps\z/ ) } @children ) {
+        # they're all EPS files
+
+        if ( @children == 1 ) {
+            $command = q{gzip "} .  $children[0] . q{"};
+            push @commands, $command;
+	return;
+        }
+        elsif ( $basename =~ /eps/i ) {
+            $zipfile = "$basename.zip";
+        }
+        else {
+            $zipfile = "$basename-eps.zip";
+        }
+        $command = qq{cd "$parent"; zip -rm "$zipfile" "$basename"};
+        push @commands, $command;
+
+    }
+    elsif ( any { $_ =~ /\.eps$/i } @children ) {
+        @children = grep {/\.eps$/i} @children;
+
+        if ( @children == 1 ) {
+            my $child = $children[0];
+            $zipfile = $dir . "/" . $children[0]->basename . ".zip";
+            $command = qq{zip -jrm "$zipfile" "$child"};
+        }
+        else {
+            if ( $basename =~ /eps/i ) {
+                $zipfile = $basename . ".zip";
+            }
+            else {
+                $zipfile = $basename . "-eps.zip";
+            }
+            $command
+              = qq{shopt -s nocaseglob;cd "$dir";}
+              . qq{zip -jrm "$zipfile" *.eps;shopt -u nocaseglob};
+        }
+        push @commands, $command;
+    }
+
+};
+
+$basedir->recurse( depthfirst => 1, callback => $compress_cr );
+
+for my $command (@commands) {
+    say $command;
+    #system $command;
+    #next;
+
+    my $pid = fork();
+    die "Can't fork: $command" if not defined $pid;
+    next if $pid;
+    open STDOUT, ">", '/dev/null' or die $!;
+    open STDERR, ">", '/dev/null' or die $!;
+    exec $command;
+}
+
