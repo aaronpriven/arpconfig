@@ -1,0 +1,40 @@
+#!/usr/bin/env perl
+
+# this program is intended to identify directories that are nested within a
+# single other directory, e.g., a directory /a/b where the only entry in a is
+# b. At the moment it just identifies them, it's intended eventually to de-nest
+# them.
+
+use 5.034;
+
+use File::Find ();
+
+my ($tosearch) = @ARGV;
+
+die "Usage: $0 path_to_search \n"
+  unless ( $tosearch or $tosearch eq '0' );
+
+$tosearch =~ s#/$##;
+
+File::Find::finddepth( { wanted => \&wanted, no_chdir => 1 }, $tosearch );
+
+sub wanted {
+
+    my $fullpath = $File::Find::name;
+    my $filename = $_;
+    my $dir      = $File::Find::dir;
+
+    return if ( $fullpath eq $tosearch );
+
+    lstat($fullpath);
+    return unless -d _;
+
+    opendir( my $dh, $dir ) || die "Can't opendir $dir $!";
+    my @files = grep { $_ ne '.' and $_ ne '..' } readdir($dh);
+    closedir $dh;
+
+    return if @files > 1;
+
+    say $fullpath, "\t", $dir;
+
+}
