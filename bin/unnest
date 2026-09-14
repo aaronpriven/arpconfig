@@ -30,11 +30,11 @@ sub wanted {
     return unless -d _;
 
     opendir( my $dh, $dir ) || die "Can't opendir $dir $!";
-    my @files = grep { $_ ne '.' and $_ ne '..' } readdir($dh);
+    my @files = grep { $_ ne '.' and $_ ne '..' and $_ ne '.DS_Store'} readdir($dh);
     closedir $dh;
 
     return if @files > 1;
 
-    say $fullpath, "\t", $dir;
+    say $fullpath; #, "\t", $dir;
 
 }
