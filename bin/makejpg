@@ -1,0 +1,31 @@
+#!/usr/bin/env perl
+#
+# Convert a directory of photos to jpeg
+
+use 5.030;
+
+use File::Find;
+
+my $dir = $ARGV[0];
+
+find ( { wanted => \&wanted, no_chdir => 1 } , $dir);
+my (@files);
+
+sub wanted {
+   push @files, $_ if /\.(?i:png)$/;
+   push @files, $_ if /\.(?i:webp)$/;
+   push @files, $_ if /\.(?i:heic)$/;
+}
+
+foreach my $file (@files) {
+
+   my $jpeg = $file =~ s/(?:png|webp|heic)\z/jpeg/ir;
+
+  my $cmd = 
+     qq{sips -s format jpeg -s formatOptions high "$file" --out "$jpeg"};
+
+  say $cmd;
+  system $cmd;
+
+
+}
