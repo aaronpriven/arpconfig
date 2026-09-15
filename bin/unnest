@@ -8,6 +8,14 @@
 use 5.034;
 
 use File::Find ();
+use List::Util(qw/none/);
+
+use Getopt::Long 'GetOptions';
+
+GetOptions(
+    found => \my ($found),
+    doit  => => \my ($doit),
+) or die("Error in command line arguments\n");
 
 my ($tosearch) = @ARGV;
 
@@ -20,21 +28,44 @@ File::Find::finddepth( { wanted => \&wanted, no_chdir => 1 }, $tosearch );
 
 sub wanted {
 
-    my $fullpath = $File::Find::name;
-    my $filename = $_;
-    my $dir      = $File::Find::dir;
+    my $fullpath        = $File::Find::name;
+    my @components      = File::Spec->splitdir($fullpath);
+    my $name            = pop @components;
+    my $parentpath      = $File::Find::dir;
+    my $parentname      = pop @components;
+    my $grandparentpath = File::Spec->catdir(@components);
+    push @components, $parentname;
 
     return if ( $fullpath eq $tosearch );
 
     lstat($fullpath);
     return unless -d _;
 
-    opendir( my $dh, $dir ) || die "Can't opendir $dir $!";
-    my @files = grep { $_ ne '.' and $_ ne '..' and $_ ne '.DS_Store'} readdir($dh);
+    opendir( my $dh, $parentpath ) || die "Can't opendir $parentpath $!";
+    my @files
+      = grep { $_ ne '.' and $_ ne '..' and $_ ne '.DS_Store' } readdir($dh);
     closedir $dh;
 
     return if @files > 1;
 
-    say $fullpath; #, "\t", $dir;
+    if ($found) {
+        #say "$name @components";
+        return if ( none { $name eq $_ } @components );
+    }
+
+    say $fullpath;
+    my $temppath = "$grandparentpath/__unnest_temp__$parentname";
+    say "$name @components";
+    say "rename ($fullpath ,  $temppath)";
+
+    my $parent_dsstore = "$parentpath/.DS_Store";
+    if ( -e "$parentpath/.DS_Store" ) {
+        say "unlink $parent_dsstore" or die "Can't unlink $parent_dsstore";
+    }
+    say "unlink $parentpath";
+    say "rename $temppath , $parentpath";
+    say "";
+
+    #say $fullpath;    #, "\t", $dir;
 
 }
