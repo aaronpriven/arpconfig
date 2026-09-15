@@ -141,6 +141,7 @@ nnoremap <F10> :call ToggleErrors()<CR>
 "shortcut for normal mode to run on entire buffer then return to current line"
 au Filetype perl nnoremap <F12> :call DoTidy()<CR>
 au Filetype perl nnoremap <D-F> :call DoTidy()<CR>
+" command-shift-F
 
 " other perl things
 au Filetype perl set number
